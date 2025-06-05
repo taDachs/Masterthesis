@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="79.587189mm"
+   height="72.379143mm"
+   viewBox="0 0 79.587188 72.379143"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   sodipodi:docname="vector_graphic.svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.4"
+     inkscape:cx="-51.417486"
+     inkscape:cy="18.783709"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1048"
+     inkscape:window-x="3840"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-31.537804,-34.498834)">
+    <rect
+       style="fill:#00a990;fill-opacity:1;stroke-width:0.26458332"
+       id="rect815"
+       width="35.814117"
+       height="35.814117"
+       x="31.537804"
+       y="54.319271" />
+    <circle
+       style="fill:#00a990;fill-opacity:1;stroke-width:0.26458332"
+       id="path833"
+       cx="98.273804"
+       cy="94.026787"
+       r="12.851191" />
+    <path
+       sodipodi:type="star"
+       style="fill:#00a990;fill-opacity:1;stroke-width:0.26458332"
+       id="path835"
+       sodipodi:sides="5"
+       sodipodi:cx="94.872017"
+       sodipodi:cy="52.449406"
+       sodipodi:r1="18.174328"
+       sodipodi:r2="9.0871639"
+       sodipodi:arg1="0.78539816"
+       sodipodi:arg2="1.4137167"
+       inkscape:flatsided="false"
+       inkscape:rounded="0"
+       inkscape:randomized="0"
+       d="m 107.72321,65.300596 -11.429648,-3.875904 -9.672517,7.218158 0.15425,-12.067958 -9.85385,-6.968578 11.524977,-3.582504 3.582504,-11.524976 6.968577,9.853849 12.067957,-0.15425 -7.21816,9.672518 z"
+       inkscape:transform-center-x="0.87856454"
+       inkscape:transform-center-y="-0.87856406" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot837"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       transform="scale(0.26458333)"><flowRegion
+         id="flowRegion839"><rect
+           id="rect841"
+           width="272.14285"
+           height="155.71429"
+           x="140"
+           y="158.23396" /></flowRegion><flowPara
+         id="flowPara843"
+         style="font-size:18.66666691px">This text is rendered with \LaTeX</flowPara></flowRoot>    <flowRoot
+       xml:space="preserve"
+       id="flowRoot883"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       transform="matrix(0.24161021,-0.10783712,0.10783712,0.24161021,29.06992,56.798269)"><flowRegion
+         id="flowRegion885"><rect
+           id="rect887"
+           width="317.85715"
+           height="127.14285"
+           x="87.14286"
+           y="190.70181" /></flowRegion><flowPara
+         id="flowPara889"
+         style="font-size:18.66666603px">$e=mc^2$</flowPara></flowRoot>  </g>
+</svg>

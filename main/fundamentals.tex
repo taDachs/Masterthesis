@@ -1,0 +1,105 @@
+% !TeX spellcheck = en_US
+% !TeX encoding = UTF-8
+% !TeX root = ../thesis.tex
+
+\chapter{Writing Checklist}
+
+A general list of guidelines to follow when writing papers, theses, or in general. Some parts of this might be a bit debatable.
+
+\section{The Elements of Style}
+
+The following is a short selected (and probably biased) summary of style rules, based on the book "The Elements of Style" by William Strunk Jr. and E.B. White, . In general, reading the full book is highly recommendable, it's very short and you can get a copy for 6 bucks or find a PDF online. We also have a copy in our institute library. 
+
+\begin{itemize}
+\item  Always use the active voice. I know its sometimes hard, especially if German is your mother tongue, but there is almost no excuse for the passive voice in English.
+\item Try to keep your sentences short. Germans like to write long and complex sentences, which is a "no-go" in scientific English. It is often better to use a "." to end the sentence instead of using a ",".
+\item Avoid having  many short paragraphs. It shows that your document is not well structured.
+\item Use positive forms, avoid "not" if there is a word for the opposite. *Examples*: "avoid" instead of "not use", "unimportant" instead of "not important", "lack of... " instead of  "not enough of.."
+\end{itemize}
+
+\section{Citations}
+\begin{itemize}
+\item  If a paper is published on arxiv and a peer-reviewed conference/journal, make sure to always cite the peer-reviewed version.
+\item  Citations are also part of the sentence and can not occur just after your sentence. Also, never start a sentence with a citation. Examples: Dexnet 2.0 has been introduced in [2] and ...", "These grasp algorithms use either parallel grippers [1] or suction grippers [2].
+ \item  Usually, you do not name the authors in the text, but if you do, always use a citation on top
+\end{itemize}
+
+
+\section{Capitalization}
+\begin{itemize}
+    \item Capitalize appropriately in all headings, chapter titles, sections... ("This Headline is Appropriately Capitalized") ("This headline is not appropriately capitalized") 
+    \item If you explicitly reference a figure, table, chapter... that's a name, i.e., "In Section 3.1" and "In Figure 4.2" . but "In the following section". \\autoref should do that for you. 
+\end{itemize}
+
+
+\section{Equations and Math}
+\begin{itemize}
+    \item  Never start a sentence with a math symbol
+   \item  Do not use ":" in front of equations
+   \item  Your equation is always part of a sentence. Make sure your equations have proper punctuation.
+   \item  Equations should only have numbers if they are referenced from somewhere within the text.
+   \item  Do not use equations that are higher than a standard text line as in-text equations
+   \item  An equation is never allowed to go over the page margin. The equation number should also be on the same line than the equation. If it isn't, you have to add a line break somewhere before.
+   \item  Ideally, use boldfont for vectors and matrices, where vectors are lower case symbols and matrices upper-case. You can use \\boldsymbol to also use bold fonts for greek letters.
+   \item  If you want to write a symbol with more than 1 letter or text in mathmode, *always* use \\textrm for doing so. $sign$ looks like $sign$, while $\textrm{sign}$ looks like $\textrm{sign}$, which is much nicer.
+\item Never ever use "*" to indicate a multiplication. Multiplications are always "symbol-less". E.g. $a b$ instead of $a * b$.
+\item Use \\mathbb for referring to spaces such as the space of Real numbers, $\mathbb{R}$
+\end{itemize}
+\section{Consistency is Key}
+
+
+There are cases where there is no clear wrong and right. In such cases make sure you are consistent. Examples: 
+\begin{itemize}
+
+  \item  Capitalization (what is a name, what is not)
+  \item  Hyphens
+  \item  American English vs. British English
+  
+\end{itemize}
+
+\section{Figures}
+\begin{itemize}
+    \item Use (at least) vector graphics, better, if applicable, Tikz or pgfplots, also for matpotlib plots!
+    \item Let Tex do it's thing. Don't try to force a figure in specific subsection or anything. You should align them to the top of the pages (with [t] ) though.
+     \item  Each figure should be referenced from the main text at least once (so the reader knows when to look at it)
+\end{itemize}
+
+\section{Tables}
+\begin{itemize}
+    \item Use the booktabs package for nice tables
+    \item No vertical lines (or only if you really have to)..
+\end{itemize}
+
+\section{Referencing}
+\begin{itemize}
+ \item  Use hyperref but hide the links, the boxes are just ugly. (\\usepackage[hidelinks]{hyperref})
+ \item  Each figure and table should be referenced from the main text at least once (so the reader knows when to look at it)
+ \item  Reference explicitly. Example: "as shown in Section 3" instead of "as shown above/below".
+ \item  In the text, always reference as "chapter" or "section" never use the tex terms (subsection, subsubsection...). Example: "In Section 3.1" instead of "In Subsection 3.1"
+ \item  If you refer to sections or figures explicitly with a number, they should appear with a starting capital letter. E.g., "Section 3 shows" vs "In this section we show"
+\end{itemize}
+
+\section{Seek and Fix}
+
+The following list includes common mistakes that can easily be found and avoided by searching the text for the corresponding words/phrases and checking them individually. Feel free to extend the list.
+
+\subsection{Commas}
+\begin{itemize}
+    \item  , i.e.,
+ \item . e.g.,
+ \item Oxford comma in lists (before "and" or "or")
+ \item , hence,
+\end{itemize}
+ 
+\subsection{Common Mistakes}
+\begin{itemize}
+  \item where/were
+  \item their / there
+  \item The use of "This ..." without a noun. Example: "This also shows ... " $\rightarrow$ "This example also shows"
+  \item Do not use "Like ", "Because" or "But" at the beginning of a sentence
+\end{itemize}
+
+\subsection{Math}
+$\mathcal{D}$
+$\mathcal{L}$
+$q(\bm{x})$
