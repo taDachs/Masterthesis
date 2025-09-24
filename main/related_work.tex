@@ -4,4 +4,34 @@
 
 \chapter{Related Work}
 
-Related work.
+\section{Reinforcement Learing}\label{sub:reinforcement_learing}
+\todoi{why can't i just scale up off policy?}
+
+Scaling off-policy methods to larger models and higher Update-To-Data ratios has proven difficult
+due to an effect called \emph{primacy bias} \citep{hussingDissectingDeepRL2024}
+\citep{songObservationalOverfittingReinforcement2019}. This effect occurs during the early stages of
+training and hinders the critic to adapt to new data later in the training.
+\cite{songObservationalOverfittingReinforcement2019} and
+\cite{leeHypersphericalNormalizationScalable2025} attribute this to overfitting, however
+\cite{hussingDissectingDeepRL2024} traces the problem to OOD actions which result in large
+gradients, a problem which gets compounded by the momentum used in the Adam optimizer
+\citep{kingmaAdamMethodStochastic2017}. Large gradients produce large weights, and later in training
+the gradients are too small to meaningfully affect the weights. Large layer sizes and high UTDs just
+further exacerbate the problem.
+
+A solution proposed by \cite{hussingDissectingDeepRL2024} and
+\cite{leeHypersphericalNormalizationScalable2025} decouples the scale of the weights from the linear
+transform. For SimbaV2 \citep{leeHypersphericalNormalizationScalable2025}, this is achieved through a
+projection on the unit sphere and a separate element-wise scaling. This keeps the scale of the
+weights small.
+
+
+
+\todoi{simba}
+\todoi{eth anymal paper}
+
+\section{Sim-To-Real}\label{sub:sim_to_real}
+
+\todoi{RMA, Teach Student, GRAM}
+\todoi{Actuator Networks}
+\todoi{Dreamer}

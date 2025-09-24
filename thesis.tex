@@ -2,32 +2,42 @@
 
 \documentclass[english,ngerman]{template/alr_report}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% PACKAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{todonotes}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% CONFIGURATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\newcommand{\todoi}[1]{\todo[inline]{#1}}
+
 \renewcommand{\mythesis}{\mastersthesis}
-\renewcommand{\mytitle}{How to Write a Thesis at ALR}
-\renewcommand{\myshorttitle}{A Template and Guide} % Subtitle is optional.
-\renewcommand{\myname}{John J. Doe}
-\renewcommand{\timestart}{January 1\textsuperscript{st}, 2019}
-\renewcommand{\timeend}{\iflanguage{english}{June 31\textsuperscript{st},}{31. Juni} 2019}
+\renewcommand{\mytitle}{Optimizing Off-Policy Reinforcement Learning for\\Scalable, Real-Time Locomotion Tasks}
+\renewcommand{\myshorttitle}{} % Subtitle is optional.
+\renewcommand{\myname}{Maximilian Schik}
+\renewcommand{\timestart}{May 1\textsuperscript{st}, 2025}
+\renewcommand{\timeend}{\iflanguage{english}{October 31\textsuperscript{st},}{31. October} 2025}
 
 %use those in the right order (i.e. never use 'third' without 'second')
 \newcommand{\referee}{Prof. Dr. Techn. Gerhard Neumann}
 % You need a second referee, if you don't now who that is yet, talk to your supervisor
 %\newcommand{\refereetwo}{Second Referee}
 %\newcommand{\refereethree}{Third Referee}
-\newcommand{\advisor}{M.Sc. Your Advisor}
-%\newcommand{\advisortwo}{Second Advisor}
+\newcommand{\advisor}{M.Sc. Onur Celik}
+\newcommand{\advisortwo}{M.Sc Karam Daaboul}
 %\newcommand{\advisorthree}{Third Advisor}
 
 % Meta data in the PDF file.
 \hypersetup{
-	pdfauthor={\myname},
-	pdftitle={\mytitle},
-	pdfsubject={\mytitle},
-	pdfkeywords={Thesis, Template, LaTeX, ALR}  % Some relevant keywords of your choice.
+  pdfauthor={\myname},
+  pdftitle={\mytitle},
+  pdfsubject={\mytitle},
+  pdfkeywords={Thesis, Template, LaTeX, ALR}  % Some relevant keywords of your choice.
 }
 
 
@@ -75,13 +85,7 @@
 \input{main/related_work.tex}
 \cleardoublepage
 
-% This is one example content chapter.  Add more if needed.
-\input{main/example_content_chapter.tex}
-\cleardoublepage
 
-% This chapter shows examples on how to use this template.
-\input{main/template_how_to.tex}
-\cleardoublepage
 
 \input{main/evaluation.tex}
 \cleardoublepage

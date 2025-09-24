@@ -2,104 +2,167 @@
 % !TeX encoding = UTF-8
 % !TeX root = ../thesis.tex
 
-\chapter{Writing Checklist}
+\chapter{Foundations}
 
-A general list of guidelines to follow when writing papers, theses, or in general. Some parts of this might be a bit debatable.
+\section{Reinforcement Learning}
 
-\section{The Elements of Style}
+% explain basic mdp
+In Reinforcement Learning (RL), an agent interacts with an environment to learn a policy that
+maximizes cumulative rewards. The environment is typically modeled as a Markov Decision Process
+(MDP), which consists of a set of states, actions, and rewards. The agent observes the current
+state, selects an action based on its policy, and receives a reward and the next state from the
+environment. The goal is to learn a policy that maximizes the expected sum of discounted rewards
+over time. Most RL methods can be separated into two two classes: Off-Policy and On-Policy methods.
+These two classes differ in how they learn from the data collected by the agent. Off-Policy methods
+learn from data collected by the agent and other agents, while On-Policy methods learn only from
+data collected by the agent itself. This distinction is important because it affects how the agent
+can explore the environment and how it can leverage past experiences to improve its policy
+\citep{suttonReinforcementLearningIntroduction1998}.
 
-The following is a short selected (and probably biased) summary of style rules, based on the book "The Elements of Style" by William Strunk Jr. and E.B. White, . In general, reading the full book is highly recommendable, it's very short and you can get a copy for 6 bucks or find a PDF online. We also have a copy in our institute library. 
+\subsection{Policy and Value Networks}\label{sub:policy_and_critic_networks} % (fold)
 
-\begin{itemize}
-\item  Always use the active voice. I know its sometimes hard, especially if German is your mother tongue, but there is almost no excuse for the passive voice in English.
-\item Try to keep your sentences short. Germans like to write long and complex sentences, which is a "no-go" in scientific English. It is often better to use a "." to end the sentence instead of using a ",".
-\item Avoid having  many short paragraphs. It shows that your document is not well structured.
-\item Use positive forms, avoid "not" if there is a word for the opposite. *Examples*: "avoid" instead of "not use", "unimportant" instead of "not important", "lack of... " instead of  "not enough of.."
-\end{itemize}
+Since most publications this thesis is based on use Deep Reinforcement Learning (DRL) as the
+underlying method, this work will assume that all function approximators used by the agent are Deep
+Neural Networks (DNNs), unless stated otherwise. Neural networks are commonly used due to their
+ability to handle large continuous action and state spaces
+\citep{mnihHumanlevelControlDeep2015a}.
 
-\section{Citations}
-\begin{itemize}
-\item  If a paper is published on arxiv and a peer-reviewed conference/journal, make sure to always cite the peer-reviewed version.
-\item  Citations are also part of the sentence and can not occur just after your sentence. Also, never start a sentence with a citation. Examples: Dexnet 2.0 has been introduced in [2] and ...", "These grasp algorithms use either parallel grippers [1] or suction grippers [2].
- \item  Usually, you do not name the authors in the text, but if you do, always use a citation on top
-\end{itemize}
+\subsubsection{Policy Networks}\label{sec:policy_networks} % (fold)
+
+A policy network is a function approximators that maps states to actions. It can be either
+deterministic or stochastic. In a deterministic policy, the network outputs a single action for each
+state \citep{lillicrapContinuousControlDeep2019}, while in a stochastic policy, the network outputs
+a probability distribution over actions \citep{schulmanProximalPolicyOptimization2017b}. The
+inherent randomness of a stochastic policy can be used for exploration, while a deterministic policy
+has to handle exploration explicitly, i.e. by sampling from a noise distribution
+\citep{fujimotoAddressingFunctionApproximation2018}.
+
+\subsubsection{Value Networks}\label{sec:value_networks} % (fold)
+
+For the $Q$ and $V$ functions a similar network is used, which maps either the state or a
+state-action pair to the expected discounted reward. In most cases the critic is trained using the
+\emph{temporal difference} loss
+\[
+    \mathcal{L} = | Q(s_t, a_t) - (r_t + \gamma Q(s_{t+1}, a_{t+1})) |^2
+\]
+
+While this loss might look similar to supervised learning, it is important to note that the targets
+are moving, as \(Q\) is also constantly being updated.\todo{well not constantly, target networks are
+a thing} The predicted values are also noisy, which can lead to overestimation. To avoid this, two
+$Q$-networks can be used \citep{vanhasseltDeepReinforcementLearning2015}.
+
+The critic can be discarded once the policy is trained. In the context of robotics this allows to
+train the critic on information that is not available to the policy once deployed
+\citep{pintoAsymmetricActorCritic2017}. This is referred to as \emph{asymmetric training} and
+relates to the difference between a fully observable and a partially observable Markov process. The
+critic is trained on the full state and the policy is trained on the partial observations and has to
+infer the full the state.
+
+Recent work
+(\cite{bellemareDistributionalPerspectiveReinforcement2017},
+\cite{leeHypersphericalNormalizationScalable2025}, \cite{seoFastTD3SimpleFast2025}) has also shown
+the advantages of using a distribution for value functions. A distribution is better suited to
+model the inherent stochasticity of the reward term, which improves learning stability.
+\todo{this sounds stupid}
+
+\subsection{Off Policy Methods}\label{sub:off_policy_methods} % (fold)
+% subsection Off Policy Methods (end)
+
+In Off Policy RL data sampled from any policy can be used. This allows the agent to learn from
+data any source, such as older versions of the policy, or data collected from a real robot running
+a different policy or traditional control approaches.
+
+The agent trains two networks: One for the policy, and one for the
+critic, which learns the Q function. The critic is trained in a supervised fashion, while the policy
+is trained on the approximated Q function. Methods like this are called Actor-Critic methods.
+
+\subsubsection{TD3}\label{sec:td3}
+
+\emph{Twind Delayed Deep Determinstic Policy Gradient}
+\citep{fujimotoAddressingFunctionApproximation2018}, or short TD3, is an actor-critic method that
+improves upon DDPG \citep{silverDeterministicPolicyGradient} by extending it with clipped double-Q
+learning, as described in \ref{sec:value_networks}, and applying additional noise to the actions
+used for computing the target values. The added noise smooths out Q values, which makes it harder to
+for the policy to exploit errors in the Q function. It also delays the policy updated compared to
+the critic update.
+
+% subsubsection TD3 (end)
+
+% talk about sac
+\subsubsection{Soft Actor Critic}\label{sec:sac} % (fold)
+Soft Actor Critic (SAC) is an off-policy actor-critic algorithm that makes use of an additional
+entropy term in the loss function to encourage exploration. The policy is trained to maximize the
+expected reward and the entropy of the policy
+\begin{align}
+    \mathcal{L}_{\pi}(\theta) = \mathbb{E}_{s_t \sim \mathcal{D}} \left[ Q_{\phi}(s_t,
+    \pi_{\theta}(s_t)) + \alpha H(\pi_{\theta}(\cdot | s_t)) \right],
+\end{align}
+which leads to a more exploratory behavior. The
+critic is trained to minimize the mean squared error between the predicted Q values and the target
+Q values
+
+\begin{align}
+    \mathcal{L}_{Q}(\phi) = \mathbb{E}_{(s_t, a_t, r_t, s_{t+1}) \sim \mathcal{D}} \left[
+    (Q_{\phi}(s_t, a_t) - (r_t + \gamma V_{\psi}(s_{t+1})))^2 \right],
+\end{align} which are computed using the Bellman equation. SAC uses two Q networks to reduce
+overestimation bias, and it also uses a target policy network to stabilize training
+\citep{haarnojaSoftActorCriticOffPolicy2018}.
+
+\subsection{On Policy Methods}\label{sub:on_policy_methods} % (fold)
+
+On-Policy methods learn from data collected by the agent itself. This means that the agent has to
+explore the environment to collect data, which can be inefficient.
+
+\subsubsection{Proximal Policy Optimization}\label{sec:proximal_policy_optimization} % (fold)
+
+In Proximal Policy Optimization (PPO), the policy is trained to maximize the expected
+advantage of the actions taken, while keeping the policy update small to avoid large changes in the
+policy. This is done by clipping the policy update to a certain range, which prevents the policy
+from changing too much in a single update. The loss function for the policy is given by
+\begin{align}
+    \mathcal{L}_{\pi}(\theta) = \mathbb{E}_{s_t \sim \mathcal{D}} \left[ \min \left( r_t(\theta)
+    A_t, \text{clip}(r_t(\theta), 1 - \epsilon, 1 + \epsilon) A_t \right) \right],
+\end{align}
+
+where $r_t(\theta)$ is the ratio of the new policy to the old policy, $A_t$ is the advantage of the
+action taken, and $\epsilon$ is a hyperparameter that controls the clipping range. The advantage
+is computed using a value network, which is trained to minimize the mean squared error between the
+predicted value and the target value
+\begin{align}
+    \mathcal{L}_{V}(\psi) = \mathbb{E}_{s_t \sim \mathcal{D}} \left[ (V_{\psi}(s_t) - V_{targ})^2
+    \right],
+\end{align}
+where $V_{targ}$ is the target value computed using the Bellman equation
+\citep{schulmanProximalPolicyOptimization2017b}.
+
+% subsubsection Proximal Policy Optimization (end)
+
+% subsection On Policy Methods (end)
+
+\section{Locomotion}
+
+\subsubsection{MPC}
+
+Before the rise of reinforcement learning the most common approach for walking robots was based on
+model predictive control (MPC), where a (simplified) model of the physics of the robot is used to
+predict a trajectory and the action is chosen to minimize a certain cost of function over that
+trajectory \citep{bledtMITCheetah32018}. \citep{fuMinimizingEnergyConsumption2021} shows that a
+natural looking gait can be produced by minimizing a energy consumption term over the trajectory.
+While this approach works, modelling the robot is non-trivial and the design of the controller
+requires careful consideration of the model, system, and the available hardware resources.
 
 
-\section{Capitalization}
-\begin{itemize}
-    \item Capitalize appropriately in all headings, chapter titles, sections... ("This Headline is Appropriately Capitalized") ("This headline is not appropriately capitalized") 
-    \item If you explicitly reference a figure, table, chapter... that's a name, i.e., "In Section 3.1" and "In Figure 4.2" . but "In the following section". \\autoref should do that for you. 
-\end{itemize}
+\subsubsection{Reinforcement Learning Approaches}
 
+In recent years, reinforcement learning has proven as a viable alternative to traditional control
+approaches. \cite{rudinLearningWalkMinutes2022} trained a walking policy in under 20 minutes by
+leveraging large scale simulation for collecting data and a well tuned PPO implementation. The
+approach was later extended by incorporating height fields measured by the onboard sensors. This
+allowed the robot to perform agile movements such as jumping up and down boxes and crawling under
+obstacles \citep{hoellerANYmalParkourLearning2023}.
 
-\section{Equations and Math}
-\begin{itemize}
-    \item  Never start a sentence with a math symbol
-   \item  Do not use ":" in front of equations
-   \item  Your equation is always part of a sentence. Make sure your equations have proper punctuation.
-   \item  Equations should only have numbers if they are referenced from somewhere within the text.
-   \item  Do not use equations that are higher than a standard text line as in-text equations
-   \item  An equation is never allowed to go over the page margin. The equation number should also be on the same line than the equation. If it isn't, you have to add a line break somewhere before.
-   \item  Ideally, use boldfont for vectors and matrices, where vectors are lower case symbols and matrices upper-case. You can use \\boldsymbol to also use bold fonts for greek letters.
-   \item  If you want to write a symbol with more than 1 letter or text in mathmode, *always* use \\textrm for doing so. $sign$ looks like $sign$, while $\textrm{sign}$ looks like $\textrm{sign}$, which is much nicer.
-\item Never ever use "*" to indicate a multiplication. Multiplications are always "symbol-less". E.g. $a b$ instead of $a * b$.
-\item Use \\mathbb for referring to spaces such as the space of Real numbers, $\mathbb{R}$
-\end{itemize}
-\section{Consistency is Key}
-
-
-There are cases where there is no clear wrong and right. In such cases make sure you are consistent. Examples: 
-\begin{itemize}
-
-  \item  Capitalization (what is a name, what is not)
-  \item  Hyphens
-  \item  American English vs. British English
-  
-\end{itemize}
-
-\section{Figures}
-\begin{itemize}
-    \item Use (at least) vector graphics, better, if applicable, Tikz or pgfplots, also for matpotlib plots!
-    \item Let Tex do it's thing. Don't try to force a figure in specific subsection or anything. You should align them to the top of the pages (with [t] ) though.
-     \item  Each figure should be referenced from the main text at least once (so the reader knows when to look at it)
-\end{itemize}
-
-\section{Tables}
-\begin{itemize}
-    \item Use the booktabs package for nice tables
-    \item No vertical lines (or only if you really have to)..
-\end{itemize}
-
-\section{Referencing}
-\begin{itemize}
- \item  Use hyperref but hide the links, the boxes are just ugly. (\\usepackage[hidelinks]{hyperref})
- \item  Each figure and table should be referenced from the main text at least once (so the reader knows when to look at it)
- \item  Reference explicitly. Example: "as shown in Section 3" instead of "as shown above/below".
- \item  In the text, always reference as "chapter" or "section" never use the tex terms (subsection, subsubsection...). Example: "In Section 3.1" instead of "In Subsection 3.1"
- \item  If you refer to sections or figures explicitly with a number, they should appear with a starting capital letter. E.g., "Section 3 shows" vs "In this section we show"
-\end{itemize}
-
-\section{Seek and Fix}
-
-The following list includes common mistakes that can easily be found and avoided by searching the text for the corresponding words/phrases and checking them individually. Feel free to extend the list.
-
-\subsection{Commas}
-\begin{itemize}
-    \item  , i.e.,
- \item . e.g.,
- \item Oxford comma in lists (before "and" or "or")
- \item , hence,
-\end{itemize}
- 
-\subsection{Common Mistakes}
-\begin{itemize}
-  \item where/were
-  \item their / there
-  \item The use of "This ..." without a noun. Example: "This also shows ... " $\rightarrow$ "This example also shows"
-  \item Do not use "Like ", "Because" or "But" at the beginning of a sentence
-\end{itemize}
-
-\subsection{Math}
-$\mathcal{D}$
-$\mathcal{L}$
-$q(\bm{x})$
+Training a policy to make use of depth perception via a camera requires more steps. While a height
+map represents the full state, multiple depth images are needed to infer the full state.
+\cite{agarwalLeggedLocomotionChallenging2022} approaches this by first training a teacher model on
+the full state with height maps and then distilling the trained teacher policy to a student policy
+that receives depth images instead of the height maps. The student policy makes use of GRUs.
