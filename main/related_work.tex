@@ -4,34 +4,114 @@
 
 \chapter{Related Work}
 
-\section{Reinforcement Learing}\label{sub:reinforcement_learing}
-\todoi{why can't i just scale up off policy?}
+\section{Scaling Off-Policy RL}\label{sec:scaling-off-policy-rl}
 
-Scaling off-policy methods to larger models and higher Update-To-Data ratios has proven difficult
-due to an effect called \emph{primacy bias} \citep{hussingDissectingDeepRL2024}
-\citep{songObservationalOverfittingReinforcement2019}. This effect occurs during the early stages of
-training and hinders the critic to adapt to new data later in the training.
-\cite{songObservationalOverfittingReinforcement2019} and
-\cite{leeHypersphericalNormalizationScalable2025} attribute this to overfitting, however
-\cite{hussingDissectingDeepRL2024} traces the problem to OOD actions which result in large
-gradients, a problem which gets compounded by the momentum used in the Adam optimizer
-\citep{kingmaAdamMethodStochastic2017}. Large gradients produce large weights, and later in training
-the gradients are too small to meaningfully affect the weights. Large layer sizes and high UTDs just
-further exacerbate the problem.
+\cite{naumanBiggerRegularizedOptimistic2024} identify two axes of scaling in off-policy RL:
+model architecture and the update-to-data (UTD) ratio. In principle, increasing model size
+(i.e., parameter count) should enable learning more complex behaviors. However, unlike other
+areas of deep learning, naively scaling model capacity in RL often \emph{reduces} performance
+\citep{bjorckDeeperDeepReinforcement2022}.
 
-A solution proposed by \cite{hussingDissectingDeepRL2024} and
-\cite{leeHypersphericalNormalizationScalable2025} decouples the scale of the weights from the linear
-transform. For SimbaV2 \citep{leeHypersphericalNormalizationScalable2025}, this is achieved through a
-projection on the unit sphere and a separate element-wise scaling. This keeps the scale of the
-weights small.
+\subsection{Problems with Scaling Up Off-Policy}
 
+Increasing UTD improves sample \emph{reuse}, but it also amplifies bootstrapping pathologies.
+Recent analyses argue the dominant failure mode is not merely ``overfitting early data'' but
+\emph{value divergence}: over-optimistic targets interact with optimizer momentum and crystallize
+a primacy effect that reduces later plasticity
+\citep{hussingDissectingDeepRL2024, nikishinPrimacyBiasDeep2022}. Concretely, large early updates
+inflate $Q$ both on in-distribution and out-of-distribution (OOD) action queries; the actor then
+exploits those directions, and repeated bootstrapping at high UTD locks in the error before the
+replay distribution diversifies \citep{hussingDissectingDeepRL2024}. Periodic partial
+re-initialization has been shown to restore plasticity, at the cost of additional wall-clock time
+\citep{doroSampleEfficientReinforcementLearning2022}.
 
+A complementary failure mode is \emph{extrapolation error}: actor updates query the critic on
+actions insufficiently covered by the buffer; function approximation extrapolates and the
+backup/argmax operator systematically selects positive errors. Mitigations include
+(i) distributional critics that predict a return distribution with fixed support (stabilizing
+targets and gradients) and (ii) critic ensembles that reduce target variance under higher UTD
+\citep{bellemareDistributionalPerspectiveReinforcement2017,
+chenRandomizedEnsembledDouble2021,
+leeHypersphericalNormalizationScalable2025}.
 
-\todoi{simba}
-\todoi{eth anymal paper}
+Simply deepening or widening encoders/critics tends to exacerbate primacy and OOD optimism unless
+paired with strong regularization and stabilized optimization
+\citep{bjorckDeeperDeepReinforcement2022}.
 
-\section{Sim-To-Real}\label{sub:sim_to_real}
+\subsection{Paths to Scale: Normalization vs. Throughput}
 
-\todoi{RMA, Teach Student, GRAM}
-\todoi{Actuator Networks}
-\todoi{Dreamer}
+\paragraph{SimbaV2.}
+\cite{leeHypersphericalNormalizationScalable2025} stabilize training by imposing
+hyperspherical/weight normalization on weights and features, \emph{decoupling parameter direction
+from scale}. Paired with a distributional critic
+\citep{bellemareDistributionalPerspectiveReinforcement2017}, this improves gradient conditioning
+and permits scaling model size and (to a degree) UTD. A limitation is the additional computational
+overhead from normalization/projections. While reported with SAC
+\citep{haarnojaSoftActorCriticOffPolicy2018}, the architectural and critic choices are, in
+principle, method-agnostic \citep{leeHypersphericalNormalizationScalable2025}.
+
+\paragraph{FastTD3.}
+\cite{seoFastTD3SimpleFast2025} scale primarily through data throughput: massively parallel
+simulation yields substantially more \emph{fresh} data per unit time, resulting in a low
+\emph{effective} UTD while retaining a standard MLP without major architectural changes. Training
+uses very large batches (e.g., 32k), which provide a more stable learning signal via increased
+in-batch diversity. Because the method builds on TD3 \citep{fujimotoAddressingFunctionApproximation2018},
+exploration noise is scheduled, and a distributional critic similar in spirit to
+\cite{bellemareDistributionalPerspectiveReinforcement2017} is employed. The SimbaV2 architecture
+can be combined with FastTD3 \citep{seoFastTD3SimpleFast2025}.
+
+\section{Locomotion Using High-Level Observations}\label{sec:locomotion-high-level-obs}
+
+Locomotion on structured indoor environments (e.g., stairs) or unstructured outdoor terrain is
+difficult to achieve reliably without \emph{exteroceptive} observations. Modern legged platforms
+carry depth cameras and LiDAR, prompting a design choice in representation: explicit geometric/semantic
+maps versus end-to-end egocentric perception.
+
+\subsection{Point Clouds}
+
+Point clouds from LiDAR or depth cameras provide direct geometry, but measurements are noisy and
+subject to occlusions by obstacles and the robot itself. \cite{hoellerNeuralSceneRepresentation2022}
+propose a reconstruction network that completes the environment from partial observations; policies
+can be trained directly on the reconstruction
+\citep{rudinAdvancedSkillsLearning2022, hoellerANYmalParkourLearning2023}. Reconstruction quality
+degrades in unstructured terrain with severe occlusions, and the approach relies on accurate, low-latency
+state estimation; during agile motions, estimator latency and transient errors can reduce reconstruction
+fidelity and downstream control performance \citep{rudinParkourWildLearning2025}.
+
+\subsection{Egocentric Vision}
+
+An established approach trains expert policies with privileged state (e.g., elevation maps) using
+on-policy RL and distills them into a student policy with egocentric inputs via DAgger
+\citep{rossReductionImitationLearning2011}. To mitigate partial observability, the student typically
+uses a GRU or LSTM. In practice, distilled students may exhibit reduced zero-shot generalization to
+unseen terrain categories relative to the experts due to the modality shift. \cite{rudinParkourWildLearning2025}
+introduce an additional fine-tuning phase of the student in simulation, improving performance by
+allowing the student to adapt behaviors (e.g., camera tilting) that better expose task-relevant
+structure to the sensor.
+
+Alternatively, \cite{chane-saneSoloParkourConstrainedReinforcement2024} warm-start an off-policy
+learner with a teacher dataset. Alongside the online replay filled by the student, a fixed offline
+buffer seeded with expert rollouts reduces data requirements; the off-policy algorithm reuses both,
+improving generalization without an explicit post-hoc fine-tuning stage.
+
+\subsection{Temporal Fusion for Egocentric Policies}
+
+High-level observations are partially observed and view-dependent. Temporal fusion encodes short
+histories to recover latent state such as terrain slope, obstacle layout, or motion-induced depth
+ambiguities. Common choices include (i) frame stacking at the encoder input and (ii) lightweight
+recurrent modules (GRU/LSTM) on visual features. For off-policy scaling, temporal fusion introduces
+two considerations: (a) critic stability, since value targets now backpropagate through
+time-dependent features; and (b) sensitivity to UTD, as repeatedly backing up correlated histories
+can inflate gradients. In practice, modest history windows, gated RNNs with normalization, and
+distributional/ensembled critics improve stability while preserving the benefits of memory.
+
+\subsection{Visual Augmentation and Input Normalization}
+
+Strong image augmentation has proven critical for pixel-based control. Random shifts/crops and
+photometric perturbations regularize the encoder, reduce overfitting to early replay contents, and
+help keep UTD low (1–2) without sacrificing sample efficiency. Input normalization (e.g., per-channel
+standardization) and feature-space normalization (e.g., LayerNorm or norm-decoupled layers) further
+stabilize the critic by controlling activation scales. In the context of scaling, this combination
+reduces target-gradient variance, improves plasticity, and mitigates OOD optimism—especially when
+paired with distributional critics or small critic ensembles
+\citep{kostrikovImageAugmentationAll2021}.

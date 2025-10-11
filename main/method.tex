@@ -1,0 +1,131 @@
+% !TeX spellcheck = en_US
+% !TeX encoding = UTF-8
+% !TeX root = ../thesis.tex
+
+\chapter{Method}\label{chap:method}
+
+The implementation builds on FastTD3~\citep{seoFastTD3SimpleFast2025} and is extended with a
+fixed-proportion offline buffer, a recurrent policy for temporal fusion, and an egocentric-vision
+pathway on the actor side. Unless stated otherwise, choices follow the background in
+\autoref{chap:foundations}.
+
+All concrete hyperparameters (batch sizes, sequence lengths, $n$-step targets, number of critics
+when ensembling, support size for the distributional head, and optimizer settings) are reported in
+the table accompanying this chapter.
+
+\section{Environment and Observations}\label{sec:environment}
+
+Experiments use IsaacLab with a Unitree GO2 robot across the following scenes:
+
+\begin{itemize}
+  \item \textbf{Rough}: uneven terrain generated as heightfield noise.
+  \item \textbf{Gap}: start on a platform with a discontinuity to the main floor; requires precise
+    foot placement to step across.
+  \item \textbf{Ring}: a suspended ring constrains the workspace; progress requires crouching and
+    ducking under.
+  \item \textbf{Box}: stacked boxes form descending steps; the robot must down-climb.
+  \item \textbf{Pit}: a two-tier pit; recovery requires climbing up successive ledges.
+  \item \textbf{Pyramid Stairs}: ascending stairs with increasing tread/riser variation.
+  \item \textbf{Inverse Pyramid Stairs}: descending counterpart to the above.
+    \todoi{images}
+\end{itemize}
+
+The student observations comprise base angular velocity, projected gravity, velocity commands,
+relative joint positions and velocities, previous action, and a $1\times48\times48$ depth image.
+The critic and teacher receive the student channels \emph{plus} privileged geometric inputs (base
+velocity and height/roof scans); vision is excluded from both teacher and critic.  Commands are
+sampled as target headings around the robot and converted to velocity commands.  Domain
+randomization is applied over friction, mass, and external pushes; occasional pushes are injected
+during rollouts.  Control is joint-space PD position control.
+\section{Action Outputs, Scaling, and PD Control}\label{sec:action-scaling}
+
+Actions command joint \emph{position targets} relative to a default pose via
+\[
+q \;=\; a \cdot \omega \;+\; \hat{q},
+\]
+where $a$ are the normalized policy outputs, $\omega$ is a scalar action range, and $\hat{q}$ is the
+default joint configuration.  Targets are tracked with PD control; torques are proportional to the
+position error. Two practical points follow:
+
+\begin{itemize}
+  \item \textbf{Effective work space.} Reducing $\omega$ shrinks the angular work space (blue
+    sectors in \autoref{fig:action-space}). Near the edges of a small work space, the policy has
+    little room to generate additional error, hence less PD torque. This makes stepping over
+    obstacles and fast recoveries harder.
+  \item \textbf{Histogram behavior.} With too small $\omega$, policies tend to sit near the
+    reachable boundary, producing spiky action histograms; with a larger $\omega$, the distribution
+    spreads and the controller has headroom to create or dissipate momentum.
+    \autoref{fig:action-space} illustrates these regimes for a representative joint (motor~8).
+\end{itemize}
+
+In all experiments, actions are clipped to the full actuator bounds of the simulator. Squashing is
+not required for stability under this setup; clipping avoids operating in a narrow $\tanh$ regime
+and preserves the linear PD relationship between target error and torque.
+
+\begin{figure}
+  \centering
+\begin{subfigure}
+    \centering
+    \includegraphics[width=0.4\textwidth]{figures/joint_range_action_scaling.png}
+  \end{subfigure}
+  \begin{subfigure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{figures/joint-range-histogram.png}
+  \end{subfigure}
+  \caption{Effect of the action-range parameter $\omega$ on reachable joint work space (left) and on
+  policy action histograms for a representative joint (right). Larger $\omega$ allows additional
+error to be commanded away from the default pose $\hat{q}$, which increases available PD torque;
+small $\omega$ constrains motion and leads to boundary concentration.}
+  \label{fig:action-space}
+\end{figure}
+
+
+\section{Scope}
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=0.95
+    \textwidth]{figures/method-workflow.png}
+    \end{center}
+    \caption{\todoi{caption}}
+  \label{fig:method-worflow}
+\end{figure}
+
+\section{Architecture}\label{sec:architecture}
+
+Two architecture families are evaluated for \emph{both} policy and critic:
+\begin{itemize}
+  \item \textbf{MLP}: three feed-forward layers (ReLU). LayerNorm can be enabled.
+  \item \textbf{Simba-style}: bias-free linear layers with feature L2-normalization and learnable
+    per-channel scalers; residual mixing with learnable coefficients (direction/scale decoupling).
+\end{itemize}
+The critic is distributional with fixed support and is used either as clipped double or as an
+ensemble.  A recurrent variant places a GRU in front of the torso; fixed-length sequences are
+sampled from replay with masking after the first terminal and optional burn-in (no gradients through
+burn-in).
+
+\paragraph{Exploration.} Exploration noise is scheduled independently per parallel environment and
+resampled on episode termination.
+
+\section{Offline Buffer}\label{sec:offline-buffer}
+
+Training uses both online replay and a fixed offline subset. The offline data come from a PPO
+teacher with privileged observations; the same privileged channels are provided to the critic during
+student training (no vision). Mini-batches are sampled as a constant mixture: half offline (teacher)
+and half online (student). The mixture is not annealed.
+
+\section{Vision (Actor-Only)}\label{sec:vision}
+
+Egocentric depth ($1\times48\times48$) is encoded by a compact CNN (conv–LeakyReLU–maxpool stacks)
+into a latent vector that is concatenated to the policy input; the critic does not receive images
+and instead uses privileged geometric channels (height/roof scans).  Training-time augmentation uses
+random shift, low-amplitude Gaussian noise, and cutout.  An auxiliary decoder reconstructs a height
+map from the latent; this loss is used only as a regularizer and is not used at test time.
+
+\section{Batch Construction and Update-to-Data}
+
+Large batches are formed by sampling uniformly from replay.  For feed-forward updates, the effective
+batch size equals the number of sampled items across all environments.  For recurrent updates, the
+sampler returns fixed-length sequences per environment; losses are masked after the first terminal
+within each sequence.  The concrete batch sizes, sequence lengths, number of updates per environment
+step, and policy-update delay are summarized in the hyperparameter table.

@@ -14,6 +14,22 @@
   file = {/home/max/Zotero/storage/DNVBDFFM/Agarwal et al. - 2022 - Legged Locomotion in Challenging Terrains using Egocentric Vision.pdf;/home/max/Zotero/storage/XLXR84X8/2211.html}
 }
 
+@online{agarwalLeggedLocomotionChallenging2022a,
+  title = {Legged {{Locomotion}} in {{Challenging Terrains}} Using {{Egocentric Vision}}},
+  author = {Agarwal, Ananye and Kumar, Ashish and Malik, Jitendra and Pathak, Deepak},
+  date = {2022-11-14},
+  eprint = {2211.07638},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2211.07638},
+  url = {http://arxiv.org/abs/2211.07638},
+  urldate = {2025-10-02},
+  abstract = {Animals are capable of precise and agile locomotion using vision. Replicating this ability has been a long-standing goal in robotics. The traditional approach has been to decompose this problem into elevation mapping and foothold planning phases. The elevation mapping, however, is susceptible to failure and large noise artifacts, requires specialized hardware, and is biologically implausible. In this paper, we present the first end-to-end locomotion system capable of traversing stairs, curbs, stepping stones, and gaps. We show this result on a medium-sized quadruped robot using a single front-facing depth camera. The small size of the robot necessitates discovering specialized gait patterns not seen elsewhere. The egocentric camera requires the policy to remember past information to estimate the terrain under its hind feet. We train our policy in simulation. Training has two phases - first, we train a policy using reinforcement learning with a cheap-to-compute variant of depth image and then in phase 2 distill it into the final policy that uses depth using supervised learning. The resulting policy transfers to the real world and is able to run in real-time on the limited compute of the robot. It can traverse a large variety of terrain while being robust to perturbations like pushes, slippery surfaces, and rocky terrain. Videos are at https://vision-locomotion.github.io},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Artificial Intelligence,Computer Science - Computer Vision and Pattern Recognition,Computer Science - Machine Learning,Computer Science - Robotics,Computer Science - Systems and Control,Electrical Engineering and Systems Science - Systems and Control},
+  file = {/home/max/Zotero/storage/2NLLUQ6C/Agarwal et al. - 2022 - Legged Locomotion in Challenging Terrains using Egocentric Vision.pdf;/home/max/Zotero/storage/SH4UR4K6/2211.html}
+}
+
 @online{atanassovConstrainedSkillDiscovery2024,
   title = {Constrained {{Skill Discovery}}: {{Quadruped Locomotion}} with {{Unsupervised Reinforcement Learning}}},
   shorttitle = {Constrained {{Skill Discovery}}},
@@ -48,6 +64,22 @@
   file = {/home/max/Zotero/storage/ZS3GZI3X/Atanassov et al. - 2024 - Curriculum-Based Reinforcement Learning for Quadrupedal Jumping A Reference-free Design.pdf;/home/max/Zotero/storage/VNYY9JJ5/2401.html}
 }
 
+@online{baLayerNormalization2016,
+  title = {Layer {{Normalization}}},
+  author = {Ba, Jimmy Lei and Kiros, Jamie Ryan and Hinton, Geoffrey E.},
+  date = {2016-07-21},
+  eprint = {1607.06450},
+  eprinttype = {arXiv},
+  eprintclass = {stat},
+  doi = {10.48550/arXiv.1607.06450},
+  url = {http://arxiv.org/abs/1607.06450},
+  urldate = {2025-10-05},
+  abstract = {Training state-of-the-art, deep neural networks is computationally expensive. One way to reduce the training time is to normalize the activities of the neurons. A recently introduced technique called batch normalization uses the distribution of the summed input to a neuron over a mini-batch of training cases to compute a mean and variance which are then used to normalize the summed input to that neuron on each training case. This significantly reduces the training time in feed-forward neural networks. However, the effect of batch normalization is dependent on the mini-batch size and it is not obvious how to apply it to recurrent neural networks. In this paper, we transpose batch normalization into layer normalization by computing the mean and variance used for normalization from all of the summed inputs to the neurons in a layer on a single training case. Like batch normalization, we also give each neuron its own adaptive bias and gain which are applied after the normalization but before the non-linearity. Unlike batch normalization, layer normalization performs exactly the same computation at training and test times. It is also straightforward to apply to recurrent neural networks by computing the normalization statistics separately at each time step. Layer normalization is very effective at stabilizing the hidden state dynamics in recurrent networks. Empirically, we show that layer normalization can substantially reduce the training time compared with previously published techniques.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Machine Learning,Statistics - Machine Learning},
+  file = {/home/max/Zotero/storage/WXVWACTK/Ba et al. - 2016 - Layer Normalization.pdf;/home/max/Zotero/storage/WZKHCH6E/1607.html}
+}
+
 @online{ballEfficientOnlineReinforcement2023,
   title = {Efficient {{Online Reinforcement Learning}} with {{Offline Data}}},
   author = {Ball, Philip J. and Smith, Laura and Kostrikov, Ilya and Levine, Sergey},
@@ -78,6 +110,22 @@
   pubstate = {prepublished},
   keywords = {Computer Science - Artificial Intelligence,Computer Science - Machine Learning,Statistics - Machine Learning},
   file = {/home/max/Zotero/storage/NXPVA4NZ/Bellemare et al. - 2017 - A Distributional Perspective on Reinforcement Learning.pdf;/home/max/Zotero/storage/SM9HY4V2/1707.html}
+}
+
+@online{bjorckDeeperDeepReinforcement2022,
+  title = {Towards {{Deeper Deep Reinforcement Learning}} with {{Spectral Normalization}}},
+  author = {Bjorck, Johan and Gomes, Carla P. and Weinberger, Kilian Q.},
+  date = {2022-01-03},
+  eprint = {2106.01151},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2106.01151},
+  url = {http://arxiv.org/abs/2106.01151},
+  urldate = {2025-09-28},
+  abstract = {In computer vision and natural language processing, innovations in model architecture that increase model capacity have reliably translated into gains in performance. In stark contrast with this trend, state-of-the-art reinforcement learning (RL) algorithms often use small MLPs, and gains in performance typically originate from algorithmic innovations. It is natural to hypothesize that small datasets in RL necessitate simple models to avoid overfitting; however, this hypothesis is untested. In this paper we investigate how RL agents are affected by exchanging the small MLPs with larger modern networks with skip connections and normalization, focusing specifically on actor-critic algorithms. We empirically verify that naively adopting such architectures leads to instabilities and poor performance, likely contributing to the popularity of simple models in practice. However, we show that dataset size is not the limiting factor, and instead argue that instability from taking gradients through the critic is the culprit. We demonstrate that spectral normalization (SN) can mitigate this issue and enable stable training with large modern architectures. After smoothing with SN, larger models yield significant performance improvements -- suggesting that more "easy" gains may be had by focusing on model architectures in addition to algorithmic innovations.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Machine Learning},
+  file = {/home/max/Zotero/storage/GTSVVSI4/Bjorck et al. - 2022 - Towards Deeper Deep Reinforcement Learning with Spectral Normalization.pdf;/home/max/Zotero/storage/2V839VHT/2106.html}
 }
 
 @inproceedings{bledtMITCheetah32018,
@@ -180,6 +228,23 @@
   file = {/home/max/Zotero/storage/JMQ8G7MH/Chen et al. - 2019 - Learning by Cheating.pdf;/home/max/Zotero/storage/9S4LXITS/1912.html}
 }
 
+@online{chenRandomizedEnsembledDouble2021,
+  title = {Randomized {{Ensembled Double Q-Learning}}: {{Learning Fast Without}} a {{Model}}},
+  shorttitle = {Randomized {{Ensembled Double Q-Learning}}},
+  author = {Chen, Xinyue and Wang, Che and Zhou, Zijian and Ross, Keith},
+  date = {2021-03-18},
+  eprint = {2101.05982},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2101.05982},
+  url = {http://arxiv.org/abs/2101.05982},
+  urldate = {2025-09-30},
+  abstract = {Using a high Update-To-Data (UTD) ratio, model-based methods have recently achieved much higher sample efficiency than previous model-free methods for continuous-action DRL benchmarks. In this paper, we introduce a simple model-free algorithm, Randomized Ensembled Double Q-Learning (REDQ), and show that its performance is just as good as, if not better than, a state-of-the-art model-based algorithm for the MuJoCo benchmark. Moreover, REDQ can achieve this performance using fewer parameters than the model-based method, and with less wall-clock run time. REDQ has three carefully integrated ingredients which allow it to achieve its high performance: (i) a UTD ratio {$>>$} 1; (ii) an ensemble of Q functions; (iii) in-target minimization across a random subset of Q functions from the ensemble. Through carefully designed experiments, we provide a detailed analysis of REDQ and related model-free algorithms. To our knowledge, REDQ is the first successful model-free DRL algorithm for continuous-action spaces using a UTD ratio {$>>$} 1.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Artificial Intelligence,Computer Science - Machine Learning},
+  file = {/home/max/Zotero/storage/JT3MZNSL/Chen et al. - 2021 - Randomized Ensembled Double Q-Learning Learning Fast Without a Model.pdf;/home/max/Zotero/storage/6EIN5VUK/2101.html}
+}
+
 @inproceedings{dicarloDynamicLocomotionMIT2018,
   title = {Dynamic {{Locomotion}} in the {{MIT Cheetah}} 3 {{Through Convex Model-Predictive Control}}},
   booktitle = {2018 {{IEEE}}/{{RSJ International Conference}} on {{Intelligent Robots}} and {{Systems}} ({{IROS}})},
@@ -194,6 +259,18 @@
   eventtitle = {2018 {{IEEE}}/{{RSJ International Conference}} on {{Intelligent Robots}} and {{Systems}} ({{IROS}})},
   keywords = {Convex functions,Dynamics,Legged locomotion,Predictive control,Predictive models,Robot kinematics},
   file = {/home/max/Zotero/storage/I8D9G39F/Di Carlo et al. - 2018 - Dynamic Locomotion in the MIT Cheetah 3 Through Convex Model-Predictive Control.pdf;/home/max/Zotero/storage/ZFUXPETZ/8594448.html}
+}
+
+@inproceedings{doroSampleEfficientReinforcementLearning2022,
+  title = {Sample-{{Efficient Reinforcement Learning}} by {{Breaking}} the {{Replay Ratio Barrier}}},
+  author = {D'Oro, Pierluca and Schwarzer, Max and Nikishin, Evgenii and Bacon, Pierre-Luc and Bellemare, Marc G. and Courville, Aaron},
+  date = {2022-09-29},
+  url = {https://openreview.net/forum?id=OpC-9aBBVJe},
+  urldate = {2025-09-28},
+  abstract = {Increasing the replay ratio, the number of updates of an agent's parameters per environment interaction, is an appealing strategy for improving the sample efficiency of deep reinforcement learning algorithms. In this work, we show that fully or partially resetting the parameters of deep reinforcement learning agents causes better replay ratio scaling capabilities to emerge. We push the limits of the sample efficiency of carefully-modified algorithms by training them using an order of magnitude more updates than usual, significantly improving their performance in the Atari 100k and DeepMind Control Suite benchmarks. We then provide an analysis of the design choices required for favorable replay ratio scaling to be possible and discuss inherent limits and tradeoffs.},
+  eventtitle = {The {{Eleventh International Conference}} on {{Learning Representations}}},
+  langid = {english},
+  file = {/home/max/Zotero/storage/8ARFYPN3/D'Oro et al. - 2022 - Sample-Efficient Reinforcement Learning by Breaking the Replay Ratio Barrier.pdf}
 }
 
 @online{escontrelaAdversarialMotionPriors2022,
@@ -308,6 +385,39 @@
   file = {/home/max/Zotero/storage/KZGFZUE9/Hansen et al. - 2024 - TD-MPC2 Scalable, Robust World Models for Continuous Control.pdf}
 }
 
+@online{hoellerANYmalParkourLearning2023,
+  title = {{{ANYmal Parkour}}: {{Learning Agile Navigation}} for {{Quadrupedal Robots}}},
+  shorttitle = {{{ANYmal Parkour}}},
+  author = {Hoeller, David and Rudin, Nikita and Sako, Dhionis and Hutter, Marco},
+  date = {2023-06-26},
+  eprint = {2306.14874},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2306.14874},
+  url = {http://arxiv.org/abs/2306.14874},
+  urldate = {2025-10-02},
+  abstract = {Performing agile navigation with four-legged robots is a challenging task due to the highly dynamic motions, contacts with various parts of the robot, and the limited field of view of the perception sensors. In this paper, we propose a fully-learned approach to train such robots and conquer scenarios that are reminiscent of parkour challenges. The method involves training advanced locomotion skills for several types of obstacles, such as walking, jumping, climbing, and crouching, and then using a high-level policy to select and control those skills across the terrain. Thanks to our hierarchical formulation, the navigation policy is aware of the capabilities of each skill, and it will adapt its behavior depending on the scenario at hand. Additionally, a perception module is trained to reconstruct obstacles from highly occluded and noisy sensory data and endows the pipeline with scene understanding. Compared to previous attempts, our method can plan a path for challenging scenarios without expert demonstration, offline computation, a priori knowledge of the environment, or taking contacts explicitly into account. While these modules are trained from simulated data only, our real-world experiments demonstrate successful transfer on hardware, where the robot navigates and crosses consecutive challenging obstacles with speeds of up to two meters per second. The supplementary video can be found on the project website: https://sites.google.com/leggedrobotics.com/agile-navigation},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Robotics},
+  file = {/home/max/Zotero/storage/YLKGIKUP/Hoeller et al. - 2023 - ANYmal Parkour Learning Agile Navigation for Quadrupedal Robots.pdf;/home/max/Zotero/storage/XUKBAHVW/2306.html}
+}
+
+@online{hoellerNeuralSceneRepresentation2022,
+  title = {Neural {{Scene Representation}} for {{Locomotion}} on {{Structured Terrain}}},
+  author = {Hoeller, David and Rudin, Nikita and Choy, Christopher and Anandkumar, Animashree and Hutter, Marco},
+  date = {2022-06-16},
+  eprint = {2206.08077},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2206.08077},
+  url = {http://arxiv.org/abs/2206.08077},
+  urldate = {2025-10-02},
+  abstract = {We propose a learning-based method to reconstruct the local terrain for locomotion with a mobile robot traversing urban environments. Using a stream of depth measurements from the onboard cameras and the robot's trajectory, the algorithm estimates the topography in the robot's vicinity. The raw measurements from these cameras are noisy and only provide partial and occluded observations that in many cases do not show the terrain the robot stands on. Therefore, we propose a 3D reconstruction model that faithfully reconstructs the scene, despite the noisy measurements and large amounts of missing data coming from the blind spots of the camera arrangement. The model consists of a 4D fully convolutional network on point clouds that learns the geometric priors to complete the scene from the context and an auto-regressive feedback to leverage spatio-temporal consistency and use evidence from the past. The network can be solely trained with synthetic data, and due to extensive augmentation, it is robust in the real world, as shown in the validation on a quadrupedal robot, ANYmal, traversing challenging settings. We run the pipeline on the robot's onboard low-power computer using an efficient sparse tensor implementation and show that the proposed method outperforms classical map representations.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Artificial Intelligence,Computer Science - Computer Vision and Pattern Recognition,Computer Science - Machine Learning,Computer Science - Robotics},
+  file = {/home/max/Zotero/storage/RBGD79ZZ/Hoeller et al. - 2022 - Neural Scene Representation for Locomotion on Structured Terrain.pdf;/home/max/Zotero/storage/Y4Q5GJI9/2206.html}
+}
+
 @online{hussingDissectingDeepRL2024,
   title = {Dissecting {{Deep RL}} with {{High Update Ratios}}: {{Combatting Value Divergence}}},
   shorttitle = {Dissecting {{Deep RL}} with {{High Update Ratios}}},
@@ -340,6 +450,23 @@
   pubstate = {prepublished},
   keywords = {Computer Science - Machine Learning},
   file = {/home/max/Zotero/storage/Y7TDXBAV/Kingma and Ba - 2017 - Adam A Method for Stochastic Optimization.pdf;/home/max/Zotero/storage/9WTFD7C8/1412.html}
+}
+
+@online{kostrikovImageAugmentationAll2021,
+  title = {Image {{Augmentation Is All You Need}}: {{Regularizing Deep Reinforcement Learning}} from {{Pixels}}},
+  shorttitle = {Image {{Augmentation Is All You Need}}},
+  author = {Kostrikov, Ilya and Yarats, Denis and Fergus, Rob},
+  date = {2021-03-07},
+  eprint = {2004.13649},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2004.13649},
+  url = {http://arxiv.org/abs/2004.13649},
+  urldate = {2025-10-02},
+  abstract = {We propose a simple data augmentation technique that can be applied to standard model-free reinforcement learning algorithms, enabling robust learning directly from pixels without the need for auxiliary losses or pre-training. The approach leverages input perturbations commonly used in computer vision tasks to regularize the value function. Existing model-free approaches, such as Soft Actor-Critic (SAC), are not able to train deep networks effectively from image pixels. However, the addition of our augmentation method dramatically improves SAC's performance, enabling it to reach state-of-the-art performance on the DeepMind control suite, surpassing model-based (Dreamer, PlaNet, and SLAC) methods and recently proposed contrastive learning (CURL). Our approach can be combined with any model-free reinforcement learning algorithm, requiring only minor modifications. An implementation can be found at https://sites.google.com/view/data-regularized-q.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Computer Vision and Pattern Recognition,Computer Science - Machine Learning,Electrical Engineering and Systems Science - Image and Video Processing,Statistics - Machine Learning},
+  file = {/home/max/Zotero/storage/VA8DWZV9/Kostrikov et al. - 2021 - Image Augmentation Is All You Need Regularizing Deep Reinforcement Learning from Pixels.pdf;/home/max/Zotero/storage/4H4F4Y9Y/2004.html}
 }
 
 @online{kumarRMARapidMotor2021,
@@ -440,6 +567,22 @@
   file = {/home/max/Zotero/storage/W8IAGA8Y/Messikommer et al. - 2025 - Student-Informed Teacher Training.pdf;/home/max/Zotero/storage/FA7IF3KG/2412.html}
 }
 
+@online{mikiElevationMappingLocomotion2022,
+  title = {Elevation {{Mapping}} for {{Locomotion}} and {{Navigation}} Using {{GPU}}},
+  author = {Miki, Takahiro and Wellhausen, Lorenz and Grandia, Ruben and Jenelten, Fabian and Homberger, Timon and Hutter, Marco},
+  date = {2022-04-27},
+  eprint = {2204.12876},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2204.12876},
+  url = {http://arxiv.org/abs/2204.12876},
+  urldate = {2025-10-02},
+  abstract = {Perceiving the surrounding environment is crucial for autonomous mobile robots. An elevation map provides a memory-efficient and simple yet powerful geometric representation for ground robots. The robots can use this information for navigation in an unknown environment or perceptive locomotion control over rough terrain. Depending on the application, various post processing steps may be incorporated, such as smoothing, inpainting or plane segmentation. In this work, we present an elevation mapping pipeline leveraging GPU for fast and efficient processing with additional features both for navigation and locomotion. We demonstrated our mapping framework through extensive hardware experiments. Our mapping software was successfully deployed for underground exploration during DARPA Subterranean Challenge and for various experiments of quadrupedal locomotion.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Robotics},
+  file = {/home/max/Zotero/storage/7QN4QJKC/Miki et al. - 2022 - Elevation Mapping for Locomotion and Navigation using GPU.pdf;/home/max/Zotero/storage/KVBPU9BB/2204.html}
+}
+
 @article{mnihHumanlevelControlDeep2015a,
   title = {Human-Level Control through Deep Reinforcement Learning},
   author = {Mnih, Volodymyr and Kavukcuoglu, Koray and Silver, David and Rusu, Andrei A. and Veness, Joel and Bellemare, Marc G. and Graves, Alex and Riedmiller, Martin and Fidjeland, Andreas K. and Ostrovski, Georg and Petersen, Stig and Beattie, Charles and Sadik, Amir and Antonoglou, Ioannis and King, Helen and Kumaran, Dharshan and Wierstra, Daan and Legg, Shane and Hassabis, Demis},
@@ -474,6 +617,23 @@
   pubstate = {prepublished},
   keywords = {Computer Science - Robotics,Computer Science - Systems and Control,Electrical Engineering and Systems Science - Systems and Control},
   file = {/home/max/Zotero/storage/DMTF2XWY/Nahrendra et al. - 2023 - DreamWaQ Learning Robust Quadrupedal Locomotion With Implicit Terrain Imagination via Deep Reinforc.pdf;/home/max/Zotero/storage/LJ5CPVSD/2301.html}
+}
+
+@online{naumanBiggerRegularizedOptimistic2024,
+  title = {Bigger, {{Regularized}}, {{Optimistic}}: Scaling for Compute and Sample-Efficient Continuous Control},
+  shorttitle = {Bigger, {{Regularized}}, {{Optimistic}}},
+  author = {Nauman, Michal and Ostaszewski, Mateusz and Jankowski, Krzysztof and Miłoś, Piotr and Cygan, Marek},
+  date = {2024-12-03},
+  eprint = {2405.16158},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2405.16158},
+  url = {http://arxiv.org/abs/2405.16158},
+  urldate = {2025-09-28},
+  abstract = {Sample efficiency in Reinforcement Learning (RL) has traditionally been driven by algorithmic enhancements. In this work, we demonstrate that scaling can also lead to substantial improvements. We conduct a thorough investigation into the interplay of scaling model capacity and domain-specific RL enhancements. These empirical findings inform the design choices underlying our proposed BRO (Bigger, Regularized, Optimistic) algorithm. The key innovation behind BRO is that strong regularization allows for effective scaling of the critic networks, which, paired with optimistic exploration, leads to superior performance. BRO achieves state-of-the-art results, significantly outperforming the leading model-based and model-free algorithms across 40 complex tasks from the DeepMind Control, MetaWorld, and MyoSuite benchmarks. BRO is the first model-free algorithm to achieve near-optimal policies in the notoriously challenging Dog and Humanoid tasks.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Machine Learning},
+  file = {/home/max/Zotero/storage/E3M3FK69/Nauman et al. - 2024 - Bigger, Regularized, Optimistic scaling for compute and sample-efficient continuous control.pdf;/home/max/Zotero/storage/7H7NQCL7/2405.html}
 }
 
 @online{nikishinPrimacyBiasDeep2022,
@@ -568,6 +728,54 @@
   file = {/home/max/Zotero/storage/FXXEH2NP/Radosavovic et al. - 2024 - Humanoid Locomotion as Next Token Prediction.pdf;/home/max/Zotero/storage/NZ7RAUNP/2402.html}
 }
 
+@online{rossReductionImitationLearning2011,
+  title = {A {{Reduction}} of {{Imitation Learning}} and {{Structured Prediction}} to {{No-Regret Online Learning}}},
+  author = {Ross, Stephane and Gordon, Geoffrey J. and Bagnell, J. Andrew},
+  date = {2011-03-16},
+  eprint = {1011.0686},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.1011.0686},
+  url = {http://arxiv.org/abs/1011.0686},
+  urldate = {2025-10-02},
+  abstract = {Sequential prediction problems such as imitation learning, where future observations depend on previous predictions (actions), violate the common i.i.d. assumptions made in statistical learning. This leads to poor performance in theory and often in practice. Some recent approaches provide stronger guarantees in this setting, but remain somewhat unsatisfactory as they train either non-stationary or stochastic policies and require a large number of iterations. In this paper, we propose a new iterative algorithm, which trains a stationary deterministic policy, that can be seen as a no regret algorithm in an online learning setting. We show that any such no regret algorithm, combined with additional reduction assumptions, must find a policy with good performance under the distribution of observations it induces in such sequential settings. We demonstrate that this new approach outperforms previous approaches on two challenging imitation learning problems and a benchmark sequence labeling problem.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Artificial Intelligence,Computer Science - Machine Learning,Statistics - Machine Learning},
+  file = {/home/max/Zotero/storage/5W4HD2UN/Ross et al. - 2011 - A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning.pdf;/home/max/Zotero/storage/NYEFNUTQ/1011.html}
+}
+
+@online{rudinAdvancedSkillsLearning2022,
+  title = {Advanced {{Skills}} by {{Learning Locomotion}} and {{Local Navigation End-to-End}}},
+  author = {Rudin, Nikita and Hoeller, David and Bjelonic, Marko and Hutter, Marco},
+  date = {2022-09-26},
+  eprint = {2209.12827},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2209.12827},
+  url = {http://arxiv.org/abs/2209.12827},
+  urldate = {2025-10-02},
+  abstract = {The common approach for local navigation on challenging environments with legged robots requires path planning, path following and locomotion, which usually requires a locomotion control policy that accurately tracks a commanded velocity. However, by breaking down the navigation problem into these sub-tasks, we limit the robot's capabilities since the individual tasks do not consider the full solution space. In this work, we propose to solve the complete problem by training an end-to-end policy with deep reinforcement learning. Instead of continuously tracking a precomputed path, the robot needs to reach a target position within a provided time. The task's success is only evaluated at the end of an episode, meaning that the policy does not need to reach the target as fast as possible. It is free to select its path and the locomotion gait. Training a policy in this way opens up a larger set of possible solutions, which allows the robot to learn more complex behaviors. We compare our approach to velocity tracking and additionally show that the time dependence of the task reward is critical to successfully learn these new behaviors. Finally, we demonstrate the successful deployment of policies on a real quadrupedal robot. The robot is able to cross challenging terrains, which were not possible previously, while using a more energy-efficient gait and achieving a higher success rate.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Machine Learning,Computer Science - Robotics},
+  file = {/home/max/Zotero/storage/KBHCKP2P/Rudin et al. - 2022 - Advanced Skills by Learning Locomotion and Local Navigation End-to-End.pdf;/home/max/Zotero/storage/GI4P5M22/2209.html}
+}
+
+@online{rudinLearningWalkMinutes2022a,
+  title = {Learning to {{Walk}} in {{Minutes Using Massively Parallel Deep Reinforcement Learning}}},
+  author = {Rudin, Nikita and Hoeller, David and Reist, Philipp and Hutter, Marco},
+  date = {2022-08-19},
+  eprint = {2109.11978},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2109.11978},
+  url = {http://arxiv.org/abs/2109.11978},
+  urldate = {2025-10-02},
+  abstract = {In this work, we present and study a training set-up that achieves fast policy generation for real-world robotic tasks by using massive parallelism on a single workstation GPU. We analyze and discuss the impact of different training algorithm components in the massively parallel regime on the final policy performance and training times. In addition, we present a novel game-inspired curriculum that is well suited for training with thousands of simulated robots in parallel. We evaluate the approach by training the quadrupedal robot ANYmal to walk on challenging terrain. The parallel approach allows training policies for flat terrain in under four minutes, and in twenty minutes for uneven terrain. This represents a speedup of multiple orders of magnitude compared to previous work. Finally, we transfer the policies to the real robot to validate the approach. We open-source our training code to help accelerate further research in the field of learned legged locomotion.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Machine Learning,Computer Science - Robotics},
+  file = {/home/max/Zotero/storage/B2IWRKSM/Rudin et al. - 2022 - Learning to Walk in Minutes Using Massively Parallel Deep Reinforcement Learning.pdf;/home/max/Zotero/storage/HHQARWCY/2109.html}
+}
+
 @online{rudinParkourWildLearning2025,
   title = {Parkour in the {{Wild}}: {{Learning}} a {{General}} and {{Extensible Agile Locomotion Policy Using Multi-expert Distillation}} and {{RL Fine-tuning}}},
   shorttitle = {Parkour in the {{Wild}}},
@@ -583,6 +791,23 @@
   pubstate = {prepublished},
   keywords = {Computer Science - Robotics},
   file = {/home/max/Zotero/storage/RD7C7AG9/Rudin et al. - 2025 - Parkour in the Wild Learning a General and Extensible Agile Locomotion Policy Using Multi-expert Di.pdf;/home/max/Zotero/storage/47TVZJAJ/2505.html}
+}
+
+@online{rudinParkourWildLearning2025a,
+  title = {Parkour in the {{Wild}}: {{Learning}} a {{General}} and {{Extensible Agile Locomotion Policy Using Multi-expert Distillation}} and {{RL Fine-tuning}}},
+  shorttitle = {Parkour in the {{Wild}}},
+  author = {Rudin, Nikita and He, Junzhe and Aurand, Joshua and Hutter, Marco},
+  date = {2025-05-16},
+  eprint = {2505.11164},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2505.11164},
+  url = {http://arxiv.org/abs/2505.11164},
+  urldate = {2025-10-02},
+  abstract = {Legged robots are well-suited for navigating terrains inaccessible to wheeled robots, making them ideal for applications in search and rescue or space exploration. However, current control methods often struggle to generalize across diverse, unstructured environments. This paper introduces a novel framework for agile locomotion of legged robots by combining multi-expert distillation with reinforcement learning (RL) fine-tuning to achieve robust generalization. Initially, terrain-specific expert policies are trained to develop specialized locomotion skills. These policies are then distilled into a unified foundation policy via the DAgger algorithm. The distilled policy is subsequently fine-tuned using RL on a broader terrain set, including real-world 3D scans. The framework allows further adaptation to new terrains through repeated fine-tuning. The proposed policy leverages depth images as exteroceptive inputs, enabling robust navigation across diverse, unstructured terrains. Experimental results demonstrate significant performance improvements over existing methods in synthesizing multi-terrain skills into a single controller. Deployment on the ANYmal D robot validates the policy's ability to navigate complex environments with agility and robustness, setting a new benchmark for legged robot locomotion.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Robotics},
+  file = {/home/max/Zotero/storage/VJTQDI7E/Rudin et al. - 2025 - Parkour in the Wild Learning a General and Extensible Agile Locomotion Policy Using Multi-expert Di.pdf;/home/max/Zotero/storage/DZMQBRPQ/2505.html}
 }
 
 @online{schneiderLearningRiskAwareQuadrupedal2024,
