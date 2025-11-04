@@ -25,8 +25,8 @@ Experiments use IsaacLab with a Unitree GO2 robot across the following scenes:
     ducking under.
   \item \textbf{Box}: stacked boxes form descending steps; the robot must down-climb.
   \item \textbf{Pit}: a two-tier pit; recovery requires climbing up successive ledges.
-  \item \textbf{Pyramid Stairs}: ascending stairs with increasing tread/riser variation.
-  \item \textbf{Inverse Pyramid Stairs}: descending counterpart to the above.
+  % \item \textbf{Pyramid Stairs}: ascending stairs with increasing tread/riser variation.
+  % \item \textbf{Inverse Pyramid Stairs}: descending counterpart to the above.
     \todoi{images}
 \end{itemize}
 
@@ -80,17 +80,6 @@ small $\omega$ constrains motion and leads to boundary concentration.}
 \end{figure}
 
 
-\section{Scope}
-
-\begin{figure}
-  \begin{center}
-    \includegraphics[width=0.95
-    \textwidth]{figures/method-workflow.png}
-    \end{center}
-    \caption{\todoi{caption}}
-  \label{fig:method-worflow}
-\end{figure}
-
 \section{Architecture}\label{sec:architecture}
 
 Two architecture families are evaluated for \emph{both} policy and critic:
@@ -104,15 +93,42 @@ ensemble.  A recurrent variant places a GRU in front of the torso; fixed-length 
 sampled from replay with masking after the first terminal and optional burn-in (no gradients through
 burn-in).
 
-\paragraph{Exploration.} Exploration noise is scheduled independently per parallel environment and
+Exploration noise is scheduled independently per parallel environment and
 resampled on episode termination.
 
-\section{Offline Buffer}\label{sec:offline-buffer}
+\section{Teacher-Student Setup}\label{sec:teacher-student-setup}
 
-Training uses both online replay and a fixed offline subset. The offline data come from a PPO
-teacher with privileged observations; the same privileged channels are provided to the critic during
-student training (no vision). Mini-batches are sampled as a constant mixture: half offline (teacher)
-and half online (student). The mixture is not annealed.
+Two approaches for introducing a teacher were evaluated. The first one uses an additional offline
+buffer filled with data collected from a teacher policy with privileged observations ; the same
+privileged channels are provided to the critic during student training (no vision). Mini-batches are
+sampled as a constant mixture: half offline (teacher) and half online (student). The mixture is not
+annealed.
+
+The second approach utilizes the teacher policy \( \pi_{\text{teacher}} \) by adding an additional
+behavior cloning term to the loss function of the policy:
+
+\[
+  \pi = \text{arg max}_\pi \ \mathbb{E}_{s \sim \rho_\pi} [ Q(s, \pi(s)) - \lambda(t) \cdot || \pi(s) -
+  \pi_{\text{teacher}}(s)||^2],
+\]
+
+where \( \lambda(t) = \lambda_{\text{max}} \cdot e ^ {- \alpha t / T} \) is annealed over time with \( t
+\) being the current timestep, \( T \) the maximal timestep and \( \alpha \) a hyperparameter. The
+basid idea is to let the teacher guide the beginning of the training with the off-policy RL taking
+over later during training.
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=0.95
+    \textwidth]{figures/method-workflow.png}
+    \end{center}
+    \caption{The different approaches visualized. As a first step, the teacher policy is trained using
+    privileged information. For the offline-buffer approach, a replay buffer separate from the
+    online-buffer is filled using data collected by the teacher policy. This allows to bootstrap the
+    training using expert data. In the hybrid approach, the teacher is used to directly supervise the
+    student policy via knowledge distillation in addition to the normal off-policy training.}
+  \label{fig:method-worflow}
+\end{figure}
 
 \section{Vision (Actor-Only)}\label{sec:vision}
 
@@ -129,3 +145,23 @@ batch size equals the number of sampled items across all environments.  For recu
 sampler returns fixed-length sequences per environment; losses are masked after the first terminal
 within each sequence.  The concrete batch sizes, sequence lengths, number of updates per environment
 step, and policy-update delay are summarized in the hyperparameter table.
+
+\section{Deployment}
+
+To test the sim2real the policy is evaluated on a real robot. The robot is equipped with a payload
+containing an Intel NUC, as well as a Realsense depth camera. To make real-time inference possible
+ONNX is used as the inference engine. As the internal computer of the robot is closed off, DDS is
+used to receive measurements of the internal sensors and for sending position commands to the
+motors. The parameters of the internal PD controllers are set to the same values used in the
+simulation.
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=0.6
+    \textwidth]{figures/deployment.png}
+    \end{center}
+    \caption{The trained student policy is deployed on the robot using a payload with an Intel NUC.
+    The NUC communicates with the robots onboard-computer using DDS, while also reading depth images
+    from the realsense and preprocessing the data.}
+  \label{fig:deployment}
+\end{figure}
