@@ -5,5 +5,24 @@
 \chapter*{Zusammenfassung}
 \addcontentsline{toc}{chapter}{Zusammenfassung}
 
-Einseitige deutsche Zusammenfassung (\emph{Abstract}) der Abschlussarbeit.
-Unabhängig von der Sprache der Abschlussarbeit \emph{muss} eine deutsche Zusammenfassung verfasst werden.
+Diese Arbeit untersucht, wie skalierbares Off-Policy-Reinforcement-Learning auf
+Echtzeit-Lokomotions- aufgaben von Laufrobotern angewendet werden kann. Aufbauend auf dem
+FastTD3-Algorithmus wird der Basisansatz um drei Komponenten erweitert: (i) einen Offline-Puffer mit
+einem festen Anteil an Lehrerdaten, (ii) eine rekurrente Politik zur zeitlichen Fusion sowie (iii)
+einen egozentrischen Visionspfad auf der Akteursseite. Diese Erweiterungen adressieren die
+eingeschränkte Stabilität und geringe Dateneffizienz, die häufig beim Skalieren von
+Off-Policy-Methoden in hochdimensionalen, teilweise beobachtbaren Aufgaben auftreten.
+
+Die Experimente wurden in IsaacLab mit einem Unitree GO2-Roboter in verschiedenen Szenarien
+durchgeführt, darunter unebenes Gelände, Gräben und begrenzte Räume. Zwei Varianten des
+Lehrer–Schüler-Trainings wurden verglichen: ein statischer Offline-Puffer mit privilegierten
+Lehrerdaten sowie ein hybrider Ansatz, der einen zeitlich abnehmenden Behavior-Cloning-Verlust in
+das Online-Lernen integriert. Der hybride Ansatz zeigte die stabilste Konvergenz und die besten
+Ergebnisse und übertraf sowohl die Basis- als auch die reinen Offline-Methoden.
+
+Die trainierte Schülerpolitik wurde erfolgreich auf dem realen Roboter eingesetzt, wobei ein Intel
+NUC für die Echtzeit-Inferenz mittels ONNX verwendet wurde. Der Roboter zeigte robustes
+Kriechverhalten unter niedrigen Hindernissen, was eine teilweise Übertragung der erlernten Politik
+in reale Bedingungen bestätigt. Die Ergebnisse verdeutlichen, dass die Kombination von
+Off-Policy-Lernen mit moderater Imitationsaufsicht und egozentrischer Wahrnehmung skalierbare und
+einsatzfähige Lokomotionscontroller ermöglicht.

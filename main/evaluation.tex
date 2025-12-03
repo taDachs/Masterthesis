@@ -2,53 +2,147 @@
 % !TeX encoding = UTF-8
 % !TeX root = ../thesis.tex
 
-\chapter{Evaluation}
+\chapter{Evaluation}\label{chap:evaluation}
+
+This chapter evaluates the performance of the different learning approaches introduced in the
+previous sections. The aim is to answer two central questions:  
+(1)~which approach achieves the best overall performance on the terrain task, and  
+(2)~how the addition of a behavior-cloning term influences the training dynamics and final results.
+
+The baseline RL agent, the teacher (privileged PPO), pure behavior cloning, the hybrid method, and
+the RLPD (teacher-buffer) variant are compared. The following sections present the quantitative
+results and describe the observed training behavior.
+
+\section{Overall Comparison of Approaches}\label{sec:overall-comparison}
+
+Figure~\ref{fig:terrain-level-approaches} shows the terrain levels achieved during training for all
+evaluated approaches. The teacher agent reaches the highest terrain levels and clearly outperforms
+the remaining methods, which follows from its access to privileged state information that is
+unavailable to the student policy.
+
+Among the student-only approaches, pure behavior cloning and the hybrid method perform almost
+identically, with behavior cloning showing a very small advantage. The hybrid method does not
+meaningfully improve over behavior cloning in terms of terrain level, suggesting that behavior
+cloning already extracts most of the information recoverable from partial observations. The partial
+observability of the environment likely limits the achievable performance for both methods.
+
+The baseline RL agent and the RLPD variant perform substantially worse and do not make meaningful
+terrain progress. RLPD was also observed to be highly sensitive to the collected replay buffer: even
+buffers recorded under the same seed produced noticeably different outcomes. This sensitivity,
+combined with the low performance, indicates that RLPD does not reliably make use of the teacher
+data in this setting.
 
 \begin{figure}
-  \begin{center}
-    \includegraphics[width=0.95
-    \textwidth]{figures/evaluation/robot_obstacle.jpeg}
-    \end{center}
-    \caption{Comparison between the robot height and the obstacle height. The robot measures 45cm in
-    height (with payload) and the obstacle has a clearance of 27cm.}
+  \centering
+  \includegraphics[width=0.99\textwidth]{figures/evaluation/terrain_level.png}
+  \caption{Terrain level performance across training for all evaluated approaches. The teacher
+  (privileged PPO) reaches the highest levels, while behavior cloning and the hybrid method perform
+  similarly and substantially better than the baseline and RLPD. Right: distribution of final
+  terrain levels across runs.}
+  \label{fig:terrain-level-approaches}
+\end{figure}
+
+\section{Effect of Behavior-Cloning Weight}\label{sec:lambda-effects}
+
+Figure~\ref{fig:terrain-level-hybrid-lambda} illustrates the influence of the behavior-cloning
+weight~$\lambda_{\text{max}}$ by showing terrain level, Q-loss, and actor-loss for several choices
+of the weight. Lower values of~$\lambda_{\text{max}}$ reduce the achieved terrain level but improve
+both Q-loss and actor-loss. Removing the decay term (\(\alpha = 0\)) results in the worst losses,
+whereas runs with decay (\(\alpha = 3\)) show better behavior. Lower weights correspond to more
+off-policy learning, but weights that are too small reduce the final terrain level by roughly one
+level.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.99\textwidth]{figures/evaluation/hybrid-mode-all-plots.png}
+  \caption{Terrain level (left), Q-loss (middle), and actor-loss (right) for different
+  behavior-cloning weights~$\lambda_{\text{max}}$. Lower weights improve Q-loss and actor-loss but
+  reduce the final terrain level. Runs without decay (\(\alpha = 0\)) show the worst losses. Very
+  small weights reduce terrain performance by about one level.}
+  \label{fig:terrain-level-hybrid-lambda}
+\end{figure}
+
+The effect of the behavior-cloning weight is also reflected in the mean reward
+(Figure~\ref{fig:mean-reward-hybrid}). Higher values of~$\lambda_{\text{max}}$ or disabling the
+decay term lead to the best rewards and outperform pure behavior cloning. Very small weights reduce
+the reward. This indicates that off-policy training is taking place and allows the hybrid approach
+to outperform pure behavior cloning when both are trained for the same number of environment steps.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.99\textwidth]{figures/evaluation/hybrid_mean_reward.png}
+  \caption{Mean reward for pure behavior cloning and hybrid training with different
+  behavior-cloning weights~$\lambda_{\text{max}}$. Higher weights and the no-decay setting achieve
+  the best rewards and outperform pure behavior cloning. Very small weights reduce the reward.}
+  \label{fig:mean-reward-hybrid}
+\end{figure}
+
+A related effect is visible in the gradient norms of the vision backbone
+(Figure~\ref{fig:vision-grad-norm}). Higher values of~$\lambda_{\text{max}}$ produce stronger
+gradients, indicating that the supervised loss provides a stronger training signal for the backbone.
+Behavior cloning exhibits the largest gradients overall.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.99\textwidth]{figures/evaluation/vision_grad_norm.png}
+  \caption{Gradient norm of the vision backbone for pure behavior cloning and different
+  behavior-cloning weights~$\lambda_{\text{max}}$. Higher weights result in stronger gradients, and
+  behavior cloning shows the largest gradient norms.}
+  \label{fig:vision-grad-norm}
+\end{figure}
+
+\section{Vision Representations}\label{sec:vision-representations}
+
+Figure~\ref{fig:vision-latent-pca} shows a PCA projection of the vision latent space for the
+different approaches. Only the crawl task forms a separate cluster across all methods. The vision
+encoder appears to be overfitted to this task, while all other tasks and obstacles collapse into the
+same cluster. This behavior is also reflected in the agent’s performance: only the crawl task makes
+clear use of the visual input, whereas the remaining tasks can be solved without relying on vision.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.85\textwidth]{figures/evaluation/vision_latent_space.png}
+  \caption{PCA projection of the vision latent space for the different approaches. The crawl task
+  forms a distinct cluster for all methods, while all other tasks overlap.}
+  \label{fig:vision-latent-pca}
+\end{figure}
+
+\section{Performance on the Real Robot}\label{sec:real-robot}
+
+The trained student policy was deployed on the Unitree GO2 robot for qualitative testing. Deployment
+was conducted using the setup described in \autoref{sec:deployment}, with an Intel NUC handling
+ONNX inference and depth image preprocessing. The policy was transferred without additional
+fine-tuning in the real world, showing that domain randomization was sufficient for sim2real
+transfer.
+
+In real-world trials, the policy successfully detected low obstacles and executed crawling motions
+underneath them, as shown in Figures~\ref{fig:obstacle} and~\ref{fig:crawl}. The robot lowered its
+body posture and passed under obstacles with a clearance of approximately 27\,cm, while its height
+with payload was around 45\,cm.
+
+Performance on other obstacle types , such as step-ups or more irregular terrain , was reduced compared
+to simulation. The robot doesn't seem to use its camera for detecting the obstacle, instead relying
+on tactile perception to detect when to move it's legs up. The same behavior can be observed in the
+simulation. However, the resulting motions are too violent, and lead to the robot crashing.
+
+During flat-ground locomotion, the policy appeared less stable than the blind
+variant, which may indicate partial overfitting to the crawling task. This observation is consistent
+with the latent-space visualization in Figure~\ref{fig:vision-latent-pca}, where the crawl scene
+forms a separate cluster.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.75\textwidth]{figures/evaluation/robot_obstacle.jpeg}
+  \caption{Comparison between the robot height (45\,cm including payload) and the obstacle clearance
+  (27\,cm).}
   \label{fig:obstacle}
 \end{figure}
 
-
 \begin{figure}
-  \begin{center}
-    \includegraphics[width=0.3\textwidth]{figures/evaluation/crawl_series/1.png}
-    \includegraphics[width=0.3\textwidth]{figures/evaluation/crawl_series/2.png}
-    \includegraphics[width=0.3\textwidth]{figures/evaluation/crawl_series/3.png}
-  \end{center}
-  \caption{The robot is able to detect the obstruction and crawl under it.}
+  \centering
+  \includegraphics[width=0.3\textwidth]{figures/evaluation/crawl_series/1.png}
+  \includegraphics[width=0.3\textwidth]{figures/evaluation/crawl_series/2.png}
+  \includegraphics[width=0.3\textwidth]{figures/evaluation/crawl_series/3.png}
+  \caption{The robot detects the obstacle and successfully crawls underneath it.}
   \label{fig:crawl}
-\end{figure}
-
-
-\begin{figure}
-  \begin{center}
-    \includegraphics[width=0.95
-    \textwidth]{figures/evaluation/terrain_level.png}
-    \end{center}
-    \caption{}
-  \label{fig:terrain-level}
-\end{figure}
-
-\begin{figure}
-  \begin{center}
-    \includegraphics[width=0.95
-    \textwidth]{figures/evaluation/qf_loss.png}
-    \end{center}
-    \caption{}
-  \label{fig:qf-loss}
-\end{figure}
-
-\begin{figure}
-  \begin{center}
-    \includegraphics[width=0.95
-    \textwidth]{figures/evaluation/actor_loss.png}
-    \end{center}
-    \caption{}
-  \label{fig:actor-loss}
 \end{figure}

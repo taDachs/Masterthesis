@@ -2,16 +2,55 @@
 % !TeX encoding = UTF-8
 % !TeX root = ../thesis.tex
 
-\chapter{Conclusion and Future Work}
+\chapter{Conclusion and Future Work}\label{chap:conclusion}
 
-Some introductory paragraph.
+This chapter summarizes the main findings of the work and outlines possible directions
+for future research. The results demonstrate that off-policy reinforcement learning can
+be adapted for complex, perception-based locomotion tasks when combined with suitable
+architectural and training strategies. At the same time, the experiments reveal several
+practical challenges that remain when scaling these methods to high-level observations
+and real-world deployment.
 
+\section{Conclusion}\label{sec:conclusion}
 
-\section{Conclusion}
+The presented experiments show that off-policy algorithms such as FastTD3 can achieve
+competitive performance compared to on-policy methods like PPO when operating on
+low-level proprioceptive observations. However, extending this capability to
+high-dimensional, partially observed inputs such as depth images requires careful
+architectural and algorithmic design. Several implementation choices , particularly the
+definition of the action space, controller design, and observation structure , proved
+crucial for stable learning.
 
-Your conclusion.
+The integration of teacher data was explored through two mechanisms: an offline
+teacher buffer and a hybrid approach combining behavior cloning with off-policy
+updates. While the offline buffer was found to be highly sensitive and inconsistent
+across runs, the hybrid approach produced stable improvements and outperformed both
+the baseline and teacher-buffer variants. This suggests that direct supervision through
+a decaying imitation term can effectively guide training, whereas fixed offline data are
+difficult to balance with ongoing exploration.
 
+Overall, the results indicate that scalable off-policy learning for locomotion is
+feasible, but it requires deliberate consideration of data sources, input modalities, and
+training dynamics. Achieving reliable generalization, especially for vision-based
+policies, remains a significant challenge.
 
-\section{Future Work}
+\section{Future Work}\label{sec:future-work}
 
-Your ideas about possible future works.
+Future work could focus on improving the integration of teacher supervision within
+off-policy frameworks. Enhancing the behavior-cloning mechanism to support more
+extensive offline pretraining could reduce the reliance on online data collection and
+enable faster convergence.
+
+Further analysis of the loss behavior in the hybrid setup may provide insight into the
+relationship between imitation strength, critic stability, and learning dynamics.
+Understanding why actor and critic losses differ between configurations could inform
+more principled weighting of the hybrid objective.
+
+In addition, future research could explore stronger regularization and architectural
+modifications to improve the vision backbone, for example through contrastive
+pretraining, auxiliary reconstruction tasks, or temporal feature normalization. These
+steps may help increase generalization and robustness in real-world deployment.
+
+Another interesting option would be the integration of non-deterministic policies with the hybrid
+approach. The variance in the action could guide the weight of the behavior cloning term instead of
+just using a temporal decay.

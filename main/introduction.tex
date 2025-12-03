@@ -1,3 +1,36 @@
 \chapter{Introduction}
 
-Introduction. The topic setup here is only exemplary and might be different for your thesis, talk to your supervisor.
+Legged locomotion in unstructured environments remains a central challenge in robotics. Traditional
+model-based control approaches such as Model Predictive Control (MPC) rely on accurate system models
+and handcrafted cost functions, which limits adaptability to complex terrain and uncertain contact
+dynamics. Reinforcement learning (RL) offers a data-driven alternative by optimizing control policies
+directly from interaction, but its practical deployment on real robots remains constrained by data
+efficiency, stability, and sim-to-real transfer.
+
+Recent advances in off-policy RL, such as FastTD3 and SimbaV2, have shown that large-scale parallel
+simulation can dramatically increase sample throughput, allowing complex behaviors to emerge within
+hours. However, scaling these methods introduces new challenges. High update-to-data ratios can cause
+value divergence and over-optimistic critics, while partially observable inputs such as depth images
+further complicate credit assignment and temporal reasoning. Balancing data reuse, architectural
+complexity, and stability is therefore a key objective for enabling real-time locomotion learning.
+
+This work explores how off-policy RL can be extended to robust, perception-based locomotion while
+maintaining scalability. Building on FastTD3, the implementation introduces three components: a
+recurrent policy for temporal fusion, an egocentric depth-vision encoder on the actor side, and a
+fixed-ratio teacher–student training scheme that combines online interaction with expert
+demonstrations. The approach is evaluated in simulation on a Unitree GO2 robot across multiple terrain
+types and subsequently deployed on the real platform to assess sim-to-real transfer.
+
+The contributions of this thesis are threefold:
+\begin{enumerate}
+  \item An extension of FastTD3 with a hybrid teacher–student setup combining off-policy updates and
+        behavior-cloning supervision.
+  \item Integration of a recurrent vision architecture for egocentric perception in
+        quadruped locomotion tasks.
+  \item A real-world validation of the learned policy demonstrating crawl-under behavior on physical
+        hardware.
+\end{enumerate}
+
+Through these experiments, the thesis aims to identify design principles for scalable off-policy
+learning in partially observable, contact-rich environments and to evaluate their practical transfer
+to real robotic systems.

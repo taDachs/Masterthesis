@@ -4,20 +4,38 @@
 
 \chapter{Foundations}\label{chap:foundations}
 
+This chapter introduces the technical background needed for the methods used in this thesis. It
+summarizes key reinforcement learning concepts, including policies, value functions, and the
+distinction between on-policy and off-policy algorithms, with a focus on actor–critic methods for
+continuous control. The chapter then reviews the locomotion foundations relevant to legged robots,
+from classical model-predictive control to learning-based approaches, providing the context for the
+design choices made in later chapters.
+
 \section{Reinforcement Learning}
 
 % explain basic mdp
 In Reinforcement Learning (RL), an agent interacts with an environment to learn a policy that
 maximizes cumulative rewards. The environment is typically modeled as a Markov Decision Process
-(MDP), which consists of a set of states, actions, and rewards. The agent observes the current
-state, selects an action based on its policy, and receives a reward and the next state from the
-environment. The goal is to learn a policy that maximizes the expected sum of discounted rewards
-over time. Most RL methods can be separated into two two classes: Off-Policy and On-Policy methods.
-These two classes differ in how they learn from the data collected by the agent. Off-Policy methods
-learn from data collected by the agent and other agents, while On-Policy methods learn only from
-data collected by the agent itself. This distinction is important because it affects how the agent
-can explore the environment and how it can leverage past experiences to improve its policy
-\citep{suttonReinforcementLearningIntroduction1998}.
+(MDP)
+\[
+  \mathcal{M} = (\mathcal{S}, \mathcal{A}, P, r, \gamma),
+\]
+where $\mathcal{S}$ denotes the state space, $\mathcal{A}$ the action space,
+$P(s' \mid s, a)$ the transition dynamics, $r(s, a)$ the reward function, and
+$\gamma \in [0, 1)$ the discount factor. A (stochastic) policy $\pi(a \mid s)$ induces a trajectory
+distribution and an expected return
+\[
+  J(\pi) = \mathbb{E}_{\tau \sim \pi}\Big[\sum_{t=0}^{\infty} \gamma^t r_t\Big].
+\]
+
+The agent observes the current state, selects an action based on its policy, and receives a reward
+and the next state from the environment. The goal is to learn a policy that maximizes the expected
+sum of discounted rewards over time. Most RL methods can be separated into two classes: off-policy
+and on-policy methods. These two classes differ in how they learn from the data collected by the
+agent. Off-policy methods learn from data collected by the agent and other agents, while on-policy
+methods learn only from data collected by the agent itself. This distinction is important because it
+affects how the agent can explore the environment and how it can leverage past experiences to improve
+its policy \citep{suttonReinforcementLearningIntroduction1998}.
 
 \subsection{Policy and Value Networks}\label{sub:policy_and_critic_networks} % (fold)
 
@@ -29,62 +47,99 @@ ability to handle large continuous action and state spaces
 
 \subsubsection{Policy Networks}\label{sec:policy_networks} % (fold)
 
-A policy network is a function approximators that maps states to actions. It can be either
+A policy network is a function approximator that maps states to actions. It can be either
 deterministic or stochastic. In a deterministic policy, the network outputs a single action for each
-state \citep{lillicrapContinuousControlDeep2019}, while in a stochastic policy, the network outputs
-a probability distribution over actions \citep{schulmanProximalPolicyOptimization2017b}. The
-inherent randomness of a stochastic policy can be used for exploration, while a deterministic policy
-has to handle exploration explicitly, i.e. by sampling from a noise distribution
-\citep{fujimotoAddressingFunctionApproximation2018}.
+state, $a = \mu_{\theta}(s)$ \citep{lillicrapContinuousControlDeep2019}, while in a stochastic
+policy, the network outputs a probability distribution over actions, $\pi_{\theta}(a \mid s)$
+\citep{schulmanProximalPolicyOptimization2017b}. The inherent randomness of a stochastic policy can
+be used for exploration, while a deterministic policy has to handle exploration explicitly, for
+example by sampling from a noise distribution \citep{fujimotoAddressingFunctionApproximation2018}.
+
+For stochastic policies, the policy gradient theorem gives
+\[
+  \nabla_{\theta} J(\pi_{\theta})
+  = \mathbb{E}_{s \sim \rho_{\pi},\, a \sim \pi_{\theta}}
+    \big[\nabla_{\theta} \log \pi_{\theta}(a \mid s)\, Q^{\pi}(s, a)\big],
+\]
+while for deterministic policies the deterministic policy gradient theorem
+\citep{silverDeterministicPolicyGradient} yields
+\[
+  \nabla_{\theta} J(\mu_{\theta})
+  = \mathbb{E}_{s \sim \rho_{\mu}}
+    \big[\nabla_{a} Q^{\mu}(s, a)\vert_{a = \mu_{\theta}(s)}
+       \nabla_{\theta} \mu_{\theta}(s)\big].
+\]
 
 \subsubsection{Value Networks}\label{sec:value_networks} % (fold)
 
 For the $Q$ and $V$ functions a similar network is used, which maps either the state or a
-state-action pair to the expected discounted reward. In most cases the critic is trained using the
-\emph{temporal difference} loss
+state-action pair to the expected discounted reward. The Bellman equation for the action-value
+function is
 \[
-    \mathcal{L} = | Q(s_t, a_t) - (r_t + \gamma Q(s_{t+1}, a_{t+1})) |^2
+  Q^{\pi}(s, a)
+  = \mathbb{E}\big[r(s, a) + \gamma Q^{\pi}(s', a')\big],
+\]
+with $s' \sim P(\cdot \mid s, a)$ and $a' \sim \pi(\cdot \mid s')$. In most cases the critic is
+trained using the temporal difference loss
+\[
+    \mathcal{L}
+    = \bigl( Q(s_t, a_t) - (r_t + \gamma Q(s_{t+1}, a_{t+1})) \bigr)^2.
 \]
 
 While this loss might look similar to supervised learning, it is important to note that the targets
-are moving, as \(Q\) is also constantly being updated.\todo{well not constantly, target networks are
-a thing} The predicted values are also noisy, which can lead to overestimation. To avoid this, two
-$Q$-networks can be used \citep{vanhasseltDeepReinforcementLearning2015}.
+are moving, as \(Q\) is also constantly being updated. The predicted values are also noisy, which
+can lead to overestimation. To avoid this, two $Q$-networks can be used and the minimum of the two
+is used as the target \citep{vanhasseltDeepReinforcementLearning2015}.
 
 The critic can be discarded once the policy is trained. In the context of robotics this allows to
 train the critic on information that is not available to the policy once deployed
 \citep{pintoAsymmetricActorCritic2017}. This is referred to as \emph{asymmetric training} and
-relates to the difference between a fully observable and a partially observable Markov process. The
-critic is trained on the full state and the policy is trained on the partial observations and has to
-infer the full the state.
+relates to the difference between a fully observable and a partially observable Markov process. In
+the partially observable case the agent receives observations
+\[
+  o_t \sim O(o_t \mid s_t)
+\]
+and chooses actions according to a policy $\pi(a_t \mid o_t)$, while the critic may still be trained
+on the full state $s_t$.
 
 Recent work
 (\cite{bellemareDistributionalPerspectiveReinforcement2017},
 \cite{leeHypersphericalNormalizationScalable2025}, \cite{seoFastTD3SimpleFast2025}) has also shown
-the advantages of using a distribution for value functions. A distribution is better suited to
+the advantages of using a distribution for value functions. Instead of predicting a single scalar
+$Q(s, a)$, the critic approximates a distribution $Z(s, a)$ over returns. A common choice is a
+categorical distribution on a fixed support $\{z_i\}_{i=1}^N$ with probabilities $p_i(s,a)$, which
+allows a distributional variant of the Bellman operator to be applied while keeping the support
+fixed \citep{bellemareDistributionalPerspectiveReinforcement2017}. A distribution is better suited to
 model the inherent stochasticity of the reward term, which improves learning stability.
-\todo{this sounds stupid}
 
 \subsection{Off Policy Methods}\label{sub:off_policy_methods} % (fold)
 % subsection Off Policy Methods (end)
 
 In Off Policy RL data sampled from any policy can be used. This allows the agent to learn from
-data any source, such as older versions of the policy, or data collected from a real robot running
-a different policy or traditional control approaches.
+data from any source, such as older versions of the policy, or data collected from a real robot running
+a different policy or traditional control approaches. A replay buffer $\mathcal{D}$ stores
+transitions $(s_t, a_t, r_t, s_{t+1})$ that are later sampled for updates.
 
-The agent trains two networks: One for the policy, and one for the
-critic, which learns the Q function. The critic is trained in a supervised fashion, while the policy
-is trained on the approximated Q function. Methods like this are called Actor-Critic methods.
+The agent trains two networks: one for the policy, and one for the critic, which learns the
+$Q$ function. The critic is trained in a supervised fashion using TD targets, while the policy
+is trained on the approximated $Q$ function. Methods like this are called actor-critic methods.
 
 \subsubsection{TD3}\label{sec:td3}
 
-\emph{Twind Delayed Deep Determinstic Policy Gradient}
+\emph{Twin Delayed Deep Deterministic Policy Gradient}
 \citep{fujimotoAddressingFunctionApproximation2018}, or short TD3, is an actor-critic method that
 improves upon DDPG \citep{silverDeterministicPolicyGradient} by extending it with clipped double-Q
 learning, as described in \ref{sec:value_networks}, and applying additional noise to the actions
-used for computing the target values. The added noise smooths out Q values, which makes it harder to
-for the policy to exploit errors in the Q function. It also delays the policy updated compared to
-the critic update.
+used for computing the target values. The added noise smooths out $Q$ values, which makes it harder
+for the policy to exploit errors in the $Q$ function. Concretely, TD3 uses targets of the form
+\[
+  y_t = r_t + \gamma \min_{i=1,2}
+  Q_{\phi_i^-}\bigl(s_{t+1}, \tilde{a}_{t+1}\bigr),
+  \qquad
+  \tilde{a}_{t+1} = \mu_{\theta^-}(s_{t+1}) + \epsilon,
+\]
+where $\epsilon$ is clipped noise and $(\cdot)^-$ denotes target networks. TD3 also delays the
+policy update compared to the critic update.
 
 % subsubsection TD3 (end)
 
@@ -92,25 +147,32 @@ the critic update.
 \subsubsection{Soft Actor Critic}\label{sec:sac} % (fold)
 Soft Actor Critic (SAC) is an off-policy actor-critic algorithm that makes use of an additional
 entropy term in the loss function to encourage exploration. The policy is trained to maximize the
-expected reward and the entropy of the policy
+expected reward and the entropy of the policy,
 \begin{align}
-    \mathcal{L}_{\pi}(\theta) = \mathbb{E}_{s_t \sim \mathcal{D}} \left[ Q_{\phi}(s_t,
-    \pi_{\theta}(s_t)) + \alpha H(\pi_{\theta}(\cdot | s_t)) \right],
+    \mathcal{L}_{\pi}(\theta)
+    = \mathbb{E}_{s_t \sim \mathcal{D}} \left[
+      Q_{\phi}(s_t, \pi_{\theta}(s_t))
+      + \alpha H(\pi_{\theta}(\cdot \mid s_t)) \right],
 \end{align}
-which leads to a more exploratory behavior. The
-critic is trained to minimize the mean squared error between the predicted Q values and the target
-Q values
-
+which leads to a more exploratory behavior. The critic is trained to minimize the mean squared error
+between the predicted $Q$ values and the target $Q$ values,
 \begin{align}
-    \mathcal{L}_{Q}(\phi) = \mathbb{E}_{(s_t, a_t, r_t, s_{t+1}) \sim \mathcal{D}} \left[
-    (Q_{\phi}(s_t, a_t) - (r_t + \gamma V_{\psi}(s_{t+1})))^2 \right],
-\end{align} which are computed using the Bellman equation. SAC uses two Q networks to reduce
-overestimation bias, and it also uses a target policy network to stabilize training
-\citep{haarnojaSoftActorCriticOffPolicy2018}.
+    \mathcal{L}_{Q}(\phi) =
+    \mathbb{E}_{(s_t, a_t, r_t, s_{t+1}) \sim \mathcal{D}} \left[
+    \bigl(Q_{\phi}(s_t, a_t) - y_t\bigr)^2 \right],
+\end{align}
+with targets
+\[
+  y_t = r_t + \gamma
+  \mathbb{E}_{a_{t+1} \sim \pi}
+  \bigl[Q_{\phi^-}(s_{t+1}, a_{t+1}) - \alpha \log \pi(a_{t+1} \mid s_{t+1})\bigr].
+\]
+SAC uses two $Q$ networks to reduce overestimation bias, and it also uses a target policy network to
+stabilize training \citep{haarnojaSoftActorCriticOffPolicy2018}.
 
 \subsection{On Policy Methods}\label{sub:on_policy_methods} % (fold)
 
-On-Policy methods learn from data collected by the agent itself. This means that the agent has to
+On-policy methods learn from data collected by the agent itself. This means that the agent has to
 explore the environment to collect data, which can be inefficient.
 
 \subsubsection{Proximal Policy Optimization}\label{sec:proximal_policy_optimization} % (fold)
@@ -120,19 +182,24 @@ advantage of the actions taken, while keeping the policy update small to avoid l
 policy. This is done by clipping the policy update to a certain range, which prevents the policy
 from changing too much in a single update. The loss function for the policy is given by
 \begin{align}
-    \mathcal{L}_{\pi}(\theta) = \mathbb{E}_{s_t \sim \mathcal{D}} \left[ \min \left( r_t(\theta)
-    A_t, \text{clip}(r_t(\theta), 1 - \epsilon, 1 + \epsilon) A_t \right) \right],
+    \mathcal{L}_{\pi}(\theta) = \mathbb{E}_{s_t \sim \mathcal{D}} \left[
+      \min \left( r_t(\theta) A_t,
+      \text{clip}(r_t(\theta), 1 - \epsilon, 1 + \epsilon) A_t \right) \right],
 \end{align}
+where $r_t(\theta)$ is the ratio of the new policy to the old policy. The advantage
+$A_t$ can be computed using Generalized Advantage Estimation (GAE),
+\[
+  A_t = \sum_{l=0}^{\infty} (\gamma \lambda)^l
+  \bigl(r_{t+l} + \gamma V(s_{t+l+1}) - V(s_{t+l})\bigr).
+\]
 
-where $r_t(\theta)$ is the ratio of the new policy to the old policy, $A_t$ is the advantage of the
-action taken, and $\epsilon$ is a hyperparameter that controls the clipping range. The advantage
-is computed using a value network, which is trained to minimize the mean squared error between the
-predicted value and the target value
+The advantage is computed using a value network, which is trained to minimize the mean squared error
+between the predicted value and the target value
 \begin{align}
-    \mathcal{L}_{V}(\psi) = \mathbb{E}_{s_t \sim \mathcal{D}} \left[ (V_{\psi}(s_t) - V_{targ})^2
+    \mathcal{L}_{V}(\psi) = \mathbb{E}_{s_t \sim \mathcal{D}} \left[ (V_{\psi}(s_t) - V_{\text{targ}})^2
     \right],
 \end{align}
-where $V_{targ}$ is the target value computed using the Bellman equation
+where $V_{\text{targ}}$ is the target value computed using the Bellman equation
 \citep{schulmanProximalPolicyOptimization2017b}.
 
 % subsubsection Proximal Policy Optimization (end)
@@ -145,17 +212,20 @@ where $V_{targ}$ is the target value computed using the Bellman equation
 
 Before the rise of reinforcement learning the most common approach for walking robots was based on
 model predictive control (MPC), where a (simplified) model of the physics of the robot is used to
-predict a trajectory and the action is chosen to minimize a certain cost of function over that
-trajectory \citep{bledtMITCheetah32018}. \citep{fuMinimizingEnergyConsumption2021} shows that a
-natural looking gait can be produced by minimizing a energy consumption term over the trajectory.
+predict a trajectory and the action is chosen to minimize a certain cost function over that
+trajectory \citep{bledtMITCheetah32018}. Typically, a finite-horizon objective
+\[
+  J = \sum_{t=0}^{H} \ell(s_t, a_t)
+\]
+is minimized subject to the model dynamics. \cite{fuMinimizingEnergyConsumption2021} shows that a
+natural looking gait can be produced by minimizing an energy consumption term over the trajectory.
 While this approach works, modelling the robot is non-trivial and the design of the controller
 requires careful consideration of the model, system, and the available hardware resources.
-
 
 \subsubsection{Reinforcement Learning Approaches}
 
 In recent years, reinforcement learning has proven as a viable alternative to traditional control
-approaches. \cite{rudinLearningWalkMinutes2022} trained a walking policy in under 20 minutes by
+approaches. \cite{rudinLearningWalkMinutes2022a} trained a walking policy in under 20 minutes by
 leveraging large scale simulation for collecting data and a well tuned PPO implementation. The
 approach was later extended by incorporating height fields measured by the onboard sensors. This
 allowed the robot to perform agile movements such as jumping up and down boxes and crawling under
@@ -165,5 +235,7 @@ Training a policy to make use of depth perception via a camera requires more ste
 map represents the full state, multiple depth images are needed to infer the full state.
 \cite{agarwalLeggedLocomotionChallenging2022} approaches this by first training a teacher model on
 the full state with height maps and then distilling the trained teacher policy to a student policy
-that receives depth images instead of the height maps. The student policy makes use of GRUs.
+that receives depth images instead of the height maps. The student policy makes use of GRUs to
+encode a history of observations in a hidden state, which serves as a compact belief over the
+underlying terrain.
 

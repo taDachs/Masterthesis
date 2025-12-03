@@ -5,4 +5,22 @@
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
 
-The one-page abstract of the thesis.
+This thesis investigates how scalable off-policy reinforcement learning can be applied to real-time
+locomotion tasks on legged robots. Building on the FastTD3 algorithm, the work extends the baseline
+with (i) a fixed-proportion offline buffer for teacher data, (ii) a recurrent policy for temporal
+fusion, and (iii) an egocentric vision pathway in the actor network. These additions address the
+limited stability and sample efficiency often encountered when scaling off-policy methods to
+high-dimensional, partially observable control problems.
+
+Experiments were conducted in IsaacLab using a Unitree GO2 quadruped across diverse terrain
+scenarios, including gaps, pits, and constrained spaces. Two teacher–student training strategies
+were compared: a static offline buffer seeded with privileged rollouts, and a hybrid approach that
+integrates a time-decaying behavior-cloning loss into online learning. The hybrid setup achieved the
+most consistent convergence and highest task performance, outperforming both baseline and
+offline-only methods.
+
+The trained student policy was successfully deployed on the real robot using an Intel NUC for
+on-device ONNX inference. The robot demonstrated robust crawling behavior under low obstacles,
+confirming partial transfer of the learned policy to real-world conditions. The results highlight
+that combining off-policy reinforcement learning with moderate imitation supervision and egocentric
+perception can yield scalable and deployable locomotion controllers.

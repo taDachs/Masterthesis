@@ -18,32 +18,42 @@ the table accompanying this chapter.
 Experiments use IsaacLab with a Unitree GO2 robot across the following scenes:
 
 \begin{itemize}
-  \item \textbf{Rough}: uneven terrain generated as heightfield noise.
+  % \item \textbf{Rough}: uneven terrain generated as heightfield noise.
   \item \textbf{Gap}: start on a platform with a discontinuity to the main floor; requires precise
     foot placement to step across.
   \item \textbf{Ring}: a suspended ring constrains the workspace; progress requires crouching and
     ducking under.
   \item \textbf{Box}: stacked boxes form descending steps; the robot must down-climb.
   \item \textbf{Pit}: a two-tier pit; recovery requires climbing up successive ledges.
-  % \item \textbf{Pyramid Stairs}: ascending stairs with increasing tread/riser variation.
-  % \item \textbf{Inverse Pyramid Stairs}: descending counterpart to the above.
-    \todoi{images}
+  \item \textbf{Pyramid Stairs}: ascending stairs with increasing tread/riser variation.
+  \item \textbf{Inverse Pyramid Stairs}: descending counterpart to the above.
 \end{itemize}
+
+\begin{figure}
+  \centering
+    \includegraphics[width=0.95\textwidth]{figures/sim_tasks.png}
+  \caption{Images taken in the simulation environment used for training. The obstacles get
+  progressively harder, e.g. the gap that the robot has to jump across increases or the height the
+  robot has to crawl below gets smaller.}
+  \label{fig:sim-tasks}
+\end{figure}
+
 
 The student observations comprise base angular velocity, projected gravity, velocity commands,
 relative joint positions and velocities, previous action, and a $1\times48\times48$ depth image.
-The critic and teacher receive the student channels \emph{plus} privileged geometric inputs (base
+The critic and teacher receive the student channels \emph{plus} privileged inputs (base
 velocity and height/roof scans); vision is excluded from both teacher and critic.  Commands are
 sampled as target headings around the robot and converted to velocity commands.  Domain
 randomization is applied over friction, mass, and external pushes; occasional pushes are injected
-during rollouts.  Control is joint-space PD position control.
+during rollouts.
+
 \section{Action Outputs, Scaling, and PD Control}\label{sec:action-scaling}
 
 Actions command joint \emph{position targets} relative to a default pose via
 \[
 q \;=\; a \cdot \omega \;+\; \hat{q},
 \]
-where $a$ are the normalized policy outputs, $\omega$ is a scalar action range, and $\hat{q}$ is the
+where $a$ are the policy outputs, $\omega$ is a scalar, and $\hat{q}$ is the
 default joint configuration.  Targets are tracked with PD control; torques are proportional to the
 position error. Two practical points follow:
 
@@ -59,10 +69,9 @@ position error. Two practical points follow:
 \end{itemize}
 
 In all experiments, actions are clipped to the full actuator bounds of the simulator. Squashing is
-not required for stability under this setup; clipping avoids operating in a narrow $\tanh$ regime
-and preserves the linear PD relationship between target error and torque.
+not required for stability under this setup.
 
-\begin{figure}
+\begin{figure}[h]
   \centering
 \begin{subfigure}
     \centering
@@ -85,8 +94,7 @@ small $\omega$ constrains motion and leads to boundary concentration.}
 Two architecture families are evaluated for \emph{both} policy and critic:
 \begin{itemize}
   \item \textbf{MLP}: three feed-forward layers (ReLU). LayerNorm can be enabled.
-  \item \textbf{Simba-style}: bias-free linear layers with feature L2-normalization and learnable
-    per-channel scalers; residual mixing with learnable coefficients (direction/scale decoupling).
+  \item \textbf{Simba-style}: as described in \cite{leeHypersphericalNormalizationScalable2025}
 \end{itemize}
 The critic is distributional with fixed support and is used either as clipped double or as an
 ensemble.  A recurrent variant places a GRU in front of the torso; fixed-length sequences are
@@ -96,7 +104,7 @@ burn-in).
 Exploration noise is scheduled independently per parallel environment and
 resampled on episode termination.
 
-\section{Teacher-Student Setup}\label{sec:teacher-student-setup}
+\subsection{Teacher-Student Setup}\label{sec:teacher-student-setup}
 
 Two approaches for introducing a teacher were evaluated. The first one uses an additional offline
 buffer filled with data collected from a teacher policy with privileged observations ; the same
@@ -130,7 +138,7 @@ over later during training.
   \label{fig:method-worflow}
 \end{figure}
 
-\section{Vision (Actor-Only)}\label{sec:vision}
+\subsection{Vision (Actor-Only)}\label{sec:vision}
 
 Egocentric depth ($1\times48\times48$) is encoded by a compact CNN (conv–LeakyReLU–maxpool stacks)
 into a latent vector that is concatenated to the policy input; the critic does not receive images
@@ -138,7 +146,14 @@ and instead uses privileged geometric channels (height/roof scans).  Training-ti
 random shift, low-amplitude Gaussian noise, and cutout.  An auxiliary decoder reconstructs a height
 map from the latent; this loss is used only as a regularizer and is not used at test time.
 
-\section{Batch Construction and Update-to-Data}
+
+\section{Training}
+
+The training took place in IsaacSim, a highly parallel simulation environment. While the PPO teacher
+could be trained with 4096 environments, the student policies could only use 512 environments due to
+the increase memory footprint of the generated depth images.
+
+\subsection{Batch Construction and Update-to-Data}
 
 Large batches are formed by sampling uniformly from replay.  For feed-forward updates, the effective
 batch size equals the number of sampled items across all environments.  For recurrent updates, the
@@ -147,6 +162,7 @@ within each sequence.  The concrete batch sizes, sequence lengths, number of upd
 step, and policy-update delay are summarized in the hyperparameter table.
 
 \section{Deployment}
+\label{sec:deployment}
 
 To test the sim2real the policy is evaluated on a real robot. The robot is equipped with a payload
 containing an Intel NUC, as well as a Realsense depth camera. To make real-time inference possible
@@ -154,6 +170,9 @@ ONNX is used as the inference engine. As the internal computer of the robot is c
 used to receive measurements of the internal sensors and for sending position commands to the
 motors. The parameters of the internal PD controllers are set to the same values used in the
 simulation.
+
+The depth images are preprocessed by sampling them down to the resolution used during training
+(48x48), and thresholded to a maximum distance of 1m.
 
 \begin{figure}
   \begin{center}
